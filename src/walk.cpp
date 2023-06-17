@@ -34,11 +34,11 @@ int walk::walking(servo *leg,int rad){
     legs[2].move(x,y,z); 
     legs[3].move(x,y,z); 
   //------------------------------------
+    legs[0].move(x,(2*y+offset_y)/2,z+offset_z); 
     legs[0].move(x,y+offset_y,z); 
-    for(int i=0;i<num_legs;i++)legs[i].move(x,y-offset_y,z);
-    legs[2].move(x,y+offset_y,z);
-    legs[1].move(x,y+offset_y,z);
-    for(int i=0;i<num_legs;i++)legs[i].move(x,y-offset_y,z);
+    for(int i=0;i<num_legs;i++)legs[i].move(x,(2*y-offset_y)/2,z+offset_z),legs[i].move(x,y-offset_y,z);
+    for(int i=2;i>0;i--)legs[i].move(x,(2*y+offset_y)/2,z+offset_z),legs[i].move(x,y+offset_y,z);
+    for(int i=0;i<num_legs;i++)legs[i].move(x,(2*y+offset_y)/2,z-offset_z),legs[i].move(x,y-offset_y,z);
     legs[3].move(x,y+offset_y,z);
     
     old_rad=rad;
