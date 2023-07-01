@@ -24,9 +24,6 @@ void can_receivedata(uint32_t stdid,uint32_t rtr,uint32_t dlc,uint32_t timestamp
     can_get_rxmessage(canrxheader,canfinit);
 
 }
-
-
-
 int main(){
    
     SYSTEMInit systeminit;

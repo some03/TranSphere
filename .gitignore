@@ -1,1 +1,4 @@
 *.swp
+stm32f303k8/Driver
+stm32f303k8/Debug
+

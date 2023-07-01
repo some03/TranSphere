@@ -1,0 +1,12 @@
+2023-06-30 21:49:16,418 [INFO] Activator:176 - 
+
+
+2023-06-30 21:49:16,424 [INFO] Activator:177 - !SESSION log4j initialized
+2023-06-30 21:49:17,278 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] 6月 30, 2023 9:49:17 午後 java.util.prefs.FileSystemPreferences$1 run
+2023-06-30 21:49:17,279 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] 警告: java.io.IOException: 許可がありません
+2023-06-30 21:49:17,280 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] 
+2023-06-30 21:49:20,378 [INFO] LogOutputStream:77 - [STDOUT_REDIRECT] 
+2023-06-30 21:49:41,894 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+2023-06-30 21:49:41,895 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] SLF4J: Defaulting to no-operation (NOP) logger implementation
+2023-06-30 21:49:41,896 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+2023-06-30 21:49:47,272 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] 

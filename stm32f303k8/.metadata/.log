@@ -1,0 +1,21 @@
+!SESSION 2023-06-30 21:49:54.460 -----------------------------------------------
+eclipse.buildId=Version 1.12.1
+java.version=11.0.17
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=linux, ARCH=x86_64, WS=gtk, NL=ja_JP
+Command-line arguments:  -os linux -ws gtk -arch x86_64
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 4 4 2023-06-30 21:50:58.494
+!MESSAGE CubeMX plugin appears to be active, Log4j initialization might be too late.
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 1 1 2023-06-30 21:50:58.496
+!MESSAGE Log4j2 initialized with config file /home/akane/ros2_ws/src/TranSphere/stm32f303k8/.metadata/.log4j2.xml
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 4 4 2023-06-30 21:51:02.360
+!MESSAGE Unable to create the folder /home/akane/.local/share/mime/packages refer to a file
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2023-06-30 21:51:02.578
+!MESSAGE Started RMI Server, listening on port 41337
+
+!ENTRY org.eclipse.equinox.p2.metadata.repository 4 1000 2023-06-30 21:51:22.936
+!MESSAGE No repository found at file:/opt/st/stm32cubeide_1.12.1/.
