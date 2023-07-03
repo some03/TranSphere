@@ -34,8 +34,8 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-// #define TRANSMITTER
-// #define RECEIVER
+#define TRANSMITTER
+#define RECEIVER
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -52,6 +52,7 @@
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
+//void CAN_RX0_IRQHandler(void);
 static void can_transmitdata(uint32_t stdid, uint32_t dlc, uint32_t grobaltime, int64_t data);
 static void can_receivedata(uint32_t stdid, uint32_t rtr, uint32_t dlc, uint32_t timestamp, uint32_t matchindex, int64_t data, CanFilterInit canfinit);
 static void System_Init();
@@ -61,8 +62,10 @@ static void Can_Filter_Init();
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
 CanFilterInit cfinit;
-//for use printf
+extern "C" void CAN_RX0_IRQHandler(void);
+// for use printf
 extern "C"
 {
   int __io_putchar(int c)
@@ -87,6 +90,8 @@ int main(void)
 {
   /* USER CODE BEGIN 1 */
   setbuf(stdout, NULL);
+//  DBGMCU->APB1FZ|=DBGMCU_APB1_FZ_DBG_WWDG_STOP;
+  //WWDG->CR&=~(0b1<<7);
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -99,7 +104,7 @@ int main(void)
   /* USER CODE END Init */
 
   /* Configure the system clock */
-  //SystemClock_Config();
+  // SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
 
@@ -111,6 +116,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
   System_Init();
   Can_Init();
+  //Can_Msp_Init();
   Can_Filter_Init();
 
   /* USER CODE END 2 */
@@ -119,36 +125,23 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    printf("%f\n", 3.2);
+  //printf("%ld",CAN->MSR&0b10);
+    //printf("%s","while1");
 #ifdef TRANSMITTER
-    // uint32_t id = 3;
-    // uint32_t datasize = 8;
-    // uint32_t gtime = 0;
-    // int64_t data = 32;
-
-    // if (datasize > 8)
-    // datasize = 8;
-    // while (1)
-    //{
-    // can_transmitdata(id, datasize, gtime, data);
-    //}
-#endif
-#ifdef RECEIVER
-    // uint32_t id = 3;
-    // uint32_t rtr = 0;
-    // uint32_t datasize = 8;
-    // uint32_t timestamp = 0;
-    // uint32_t matchindex = 0;
-    // int64_t data = -1;
-
-    // while (1)
-    //{
-    // can_receivedata(id, rtr, datasize, timestamp, matchindex, data,cfinit);
+    uint32_t id = 3;
+    uint32_t datasize = 8;
+    uint32_t gtime = 0;
+    int64_t data = 10;
     // printf("%d\n",data);
-    //}
-#endif
-    /* USER CODE END WHILE */
 
+    if (datasize > 8)
+      datasize = 8;
+    can_transmitdata(id, datasize, gtime, data);
+#endif
+  //CAN_RX0_IRQHandler();
+
+
+    /* USER CODE END WHILE */
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -190,6 +183,21 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+extern "C"
+{
+  void CAN_RX0_IRQHandler(void)
+  {
+    uint32_t rid = 3;
+    uint32_t rtr = 0;
+    uint32_t rdatasize = 8;
+    uint32_t timestamp = 0;
+    uint32_t matchindex = 0;
+    int64_t rdata = -1;
+
+    // Error_Handler();
+    can_receivedata(rid, rtr, rdatasize, timestamp, matchindex, rdata, cfinit);
+  }
+}
 void can_transmitdata(uint32_t stdid, uint32_t dlc, uint32_t grobaltime, int64_t data)
 {
   CanTxHeader cantxheader;
@@ -198,9 +206,12 @@ void can_transmitdata(uint32_t stdid, uint32_t dlc, uint32_t grobaltime, int64_t
   cantxheader.transmit_grobaltime = grobaltime;
   cantxheader.transmit_data = data;
 
+  
+
   can_add_txmessage(cantxheader);
-  while (can_get_mailboxfreelevel() != 3);
-    //printf("%f", can_get_mailboxfreelevel()); // wait until transmit fiish
+  while (can_get_mailboxfreelevel() != 3)
+    ;
+  // printf("%f", can_get_mailboxfreelevel()); // wait until transmit fiish
 }
 void can_receivedata(uint32_t stdid, uint32_t rtr, uint32_t dlc, uint32_t timestamp, uint32_t matchindex, int64_t data, CanFilterInit canfinit)
 {
@@ -229,8 +240,8 @@ static void Can_Init()
   caninit.mcr_bussoff = 0;       // disable auto bussoff
   caninit.mcr_wakeup = 0;        // disable auto wakeup
   caninit.mcr_retransmit = 0;    // enable retransmit
-  caninit.mcr_fifo_lock = 1;     // enable fifo lockmode
-  caninit.mcr_fifo_priority = 1; // Priority is determined by the order of requests (0: identifier of message)
+  caninit.mcr_fifo_lock = 0;     // enable fifo lockmode
+  caninit.mcr_fifo_priority = 0; // Priority is determined by the order of requests (0: identifier of message)
   caninit.btr_debug_silent = 0;
   caninit.btr_debug_loopback = 1;
   caninit.btr_prescalar = 0b100;
@@ -246,10 +257,13 @@ static void Can_Filter_Init()
   cfinit.fm1r_filtermode = 1;
   cfinit.filter_scale = 16;
   cfinit.fm1r_fifo_number = 0;
+  cfinit.fm1r_filter_number = 0;
   cfinit.f0r1_device_id1 = 3;
   cfinit.f0r1_device_id2 = 0;
   cfinit.f0r1_device_id3 = 0;
   cfinit.f0r1_device_id4 = 0;
+
+  can_filter_init(cfinit);
 }
 /* USER CODE END 4 */
 

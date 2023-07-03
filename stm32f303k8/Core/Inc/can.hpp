@@ -6,7 +6,7 @@ typedef struct _SYSTEMInit{
    uint8_t pll_mlutiple;
    uint8_t apb1_ps;
    uint8_t latency;
-}SYSTEMInit,*PSystemInit;
+}SYSTEMInit;
 
 typedef struct _CanInit{
     uint8_t mcr_time_triger;
@@ -22,24 +22,25 @@ typedef struct _CanInit{
     uint8_t btr_swj;
     uint8_t btr_tseg1;
     uint8_t btr_tseg2;
-}CanInit, *PCanInit;
+}CanInit;
 
 typedef struct _CanFilterInit{
    uint8_t fm1r_filtermode;
    uint8_t filter_scale;
    uint8_t fm1r_fifo_number;
+   uint32_t fm1r_filter_number;
    uint8_t f0r1_device_id1;
    uint8_t f0r1_device_id2;
    uint8_t f0r1_device_id3;
    uint8_t f0r1_device_id4;
-}CanFilterInit, *PCanFilterInit;
+}CanFilterInit;
 
 typedef struct _CanTxHeader{
    uint32_t transmit_id_StdId;
    uint32_t transmit_datasize_DLC;
    uint32_t transmit_grobaltime;
    int64_t  transmit_data;
-}CanTxHeader, *PCanTxHeader;
+}CanTxHeader;
 
 typedef struct _CanRxHeader{
    uint32_t receive_id_StdId;
@@ -48,7 +49,7 @@ typedef struct _CanRxHeader{
    uint32_t receive_timestamp;
    uint32_t receive_filtermatchindex;
    int64_t  receive_data;
-}CanRxHeader, *PCanRxHeader;
+}CanRxHeader;
 
 uint32_t system_init(SYSTEMInit &sysinit);
 uint32_t can_init(CanInit &caninit);
