@@ -1,0 +1,17 @@
+2023-06-30 21:50:58,763 [INFO] Activator:176 - 
+
+
+2023-06-30 21:50:58,766 [INFO] Activator:177 - !SESSION log4j initialized
+2023-06-30 21:51:01,666 [INFO] LogOutputStream:77 - [STDOUT_REDIRECT] 
+2023-06-30 21:51:23,049 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+2023-06-30 21:51:23,052 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] SLF4J: Defaulting to no-operation (NOP) logger implementation
+2023-06-30 21:51:23,054 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+2023-06-30 21:51:29,772 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] Exception in thread "Timer-3" java.lang.SecurityException: Could not lock User prefs. Lock file access denied.
+2023-06-30 21:51:29,775 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] 	at java.prefs/java.util.prefs.FileSystemPreferences.checkLockFile0ErrorCode(FileSystemPreferences.java:956)
+2023-06-30 21:51:29,776 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] 	at java.prefs/java.util.prefs.FileSystemPreferences.lockFile(FileSystemPreferences.java:944)
+2023-06-30 21:51:29,776 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] 	at java.prefs/java.util.prefs.FileSystemPreferences.sync(FileSystemPreferences.java:748)
+2023-06-30 21:51:29,777 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] 	at java.prefs/java.util.prefs.FileSystemPreferences.flush(FileSystemPreferences.java:843)
+2023-06-30 21:51:29,777 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] 	at java.prefs/java.util.prefs.FileSystemPreferences.syncWorld(FileSystemPreferences.java:483)
+2023-06-30 21:51:29,778 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] 	at java.prefs/java.util.prefs.FileSystemPreferences$3.run(FileSystemPreferences.java:450)
+2023-06-30 21:51:29,778 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] 	at java.base/java.util.TimerThread.mainLoop(Timer.java:556)
+2023-06-30 21:51:29,779 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] 	at java.base/java.util.TimerThread.run(Timer.java:506)

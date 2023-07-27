@@ -1,6 +1,7 @@
 #ifndef CAN_H
 #define CAN_H
 #include<stdint.h>
+#include<cstdio>
 
 typedef struct _SYSTEMInit{
    uint8_t pll_mlutiple;

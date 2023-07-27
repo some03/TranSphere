@@ -20,11 +20,20 @@
 #include "main.h"
 #include "usart.h"
 #include "gpio.h"
-
+#include "cmsis_os.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "can.hpp"
 #include <stdio.h>
+#include <rcl/rcl.h>
+#include <rcl/error_handling.h>
+#include <rclc/rclc.h>
+#include <rclc/executor.h>
+#include <uxr/client/transport.h>
+#include <rmw_microxrcedds_c/config.h>
+#include <rmw_microros/rmw_microros.h>
+#include <std_msgs/msg/int32.h>
+//#include"geometry_msgs/msg/twist.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -51,13 +60,15 @@
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
+void MX_FREERTOS_Init(void);
 /* USER CODE BEGIN PFP */
 //void CAN_RX0_IRQHandler(void);
-static void can_transmitdata(uint32_t stdid, uint32_t dlc, uint32_t grobaltime, int64_t data);
-static void can_receivedata(uint32_t stdid, uint32_t rtr, uint32_t dlc, uint32_t timestamp, uint32_t matchindex, int64_t data, CanFilterInit canfinit);
+static void Can_Transmitdata(uint32_t stdid, uint32_t dlc, uint32_t grobaltime, int64_t data);
+static void Can_Receivedata(uint32_t stdid, uint32_t rtr, uint32_t dlc, uint32_t timestamp, uint32_t matchindex, int64_t data, CanFilterInit canfinit);
 static void System_Init();
 static void Can_Init();
 static void Can_Filter_Init();
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -80,6 +91,7 @@ extern "C"
     return 0;
   }
 }
+
 /* USER CODE END 0 */
 
 /**
@@ -100,7 +112,33 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
+//create node---------------------------------------------------------
+  rcl_allocator_t allocator=rcl_get_default_allocator();
 
+  rcl_support_t support;
+  rcl_ret_t rc=rclc_support_init(&support,argc,argv,&allocator);
+
+  rcl_node_t node;
+  const char* node_name="upper_module";
+  const char* namespace="upper_module_namespace";
+
+  rc=rclc_node_init_default(&node,node_name,namespace,&support);
+
+  if(rc!=RCL_RET_OK)return -1;
+//--------------------------------------------------------------------
+//create subscriber---------------------------------------------------
+  rcl_subscription_t sub;
+  const char* topic_upregs="upper_regs";
+  const char* topic_upreg1="up_reg1";
+  const char* topic_upreg2="up_reg2";
+  const char* topic_upreg3="up_reg3";
+  const char* topic_upreg4="up_reg4";
+  const rosidl_message_type_support_t *type_support=ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs,msg,Int32);
+
+  rcl_ret_t rc=rclc_subscription_init_default(&sub,&node,type_support,"reg");
+  if(rc!=RCL_RET_OK)return -1;//error
+  
+//--------------------------------------------------------------------
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -113,33 +151,34 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USART2_UART_Init();
+  MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
   System_Init();
   Can_Init();
-  //Can_Msp_Init();
   Can_Filter_Init();
 
   /* USER CODE END 2 */
+  /* Init scheduler */
+    osKernelInitialize();  /* Call init function for freertos objects (in freertos.c) */
+    MX_FREERTOS_Init();
 
+    /* Start scheduler */
+    osKernelStart();
+    /* We should never get here as control is now taken by the scheduler */
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-  //printf("%ld",CAN->MSR&0b10);
-    //printf("%s","while1");
 #ifdef TRANSMITTER
     uint32_t id = 3;
-    uint32_t datasize = 8;
+    int32_t datasize = 8;
     uint32_t gtime = 0;
     int64_t data = 10;
     // printf("%d\n",data);
 
-    if (datasize > 8)
-      datasize = 8;
-    can_transmitdata(id, datasize, gtime, data);
+    if (datasize > 8)datasize = 8;
+    Can_Transmitdata(id, datasize, gtime, data);
 #endif
-  //CAN_RX0_IRQHandler();
-
 
     /* USER CODE END WHILE */
     /* USER CODE BEGIN 3 */
@@ -195,10 +234,10 @@ extern "C"
     int64_t rdata = -1;
 
     // Error_Handler();
-    can_receivedata(rid, rtr, rdatasize, timestamp, matchindex, rdata, cfinit);
+    Can_Receivedata(rid, rtr, rdatasize, timestamp, matchindex, rdata, cfinit);
   }
 }
-void can_transmitdata(uint32_t stdid, uint32_t dlc, uint32_t grobaltime, int64_t data)
+static void Can_Transmitdata(uint32_t stdid, uint32_t dlc, uint32_t grobaltime, int64_t data)
 {
   CanTxHeader cantxheader;
   cantxheader.transmit_id_StdId = stdid;
@@ -213,7 +252,7 @@ void can_transmitdata(uint32_t stdid, uint32_t dlc, uint32_t grobaltime, int64_t
     ;
   // printf("%f", can_get_mailboxfreelevel()); // wait until transmit fiish
 }
-void can_receivedata(uint32_t stdid, uint32_t rtr, uint32_t dlc, uint32_t timestamp, uint32_t matchindex, int64_t data, CanFilterInit canfinit)
+static void Can_Receivedata(uint32_t stdid, uint32_t rtr, uint32_t dlc, uint32_t timestamp, uint32_t matchindex, int64_t data, CanFilterInit canfinit)
 {
   CanRxHeader canrxheader;
   canrxheader.receive_id_StdId = stdid;
@@ -265,6 +304,10 @@ static void Can_Filter_Init()
 
   can_filter_init(cfinit);
 }
+void MX_FREERTOS_Init(void){
+	;
+}
+
 /* USER CODE END 4 */
 
 /**
