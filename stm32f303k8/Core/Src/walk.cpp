@@ -1,7 +1,8 @@
 #include<walk.hpp>
 #include<math.h>
 #include<climits>
-void walk::set_leg_num(servo* leg,int rad){
+/*
+void walk::set_leg_num(servo* leg,int ownrad){
         
     bool set_flag=1;
     int i=0;
@@ -9,7 +10,7 @@ void walk::set_leg_num(servo* leg,int rad){
 
     while(set_flag){
         for(int i=0;i<num_legs;i++){
-            if(leg[i].position==rad){
+            if(leg[i].position==ownrad){
                 if(!set_flag)break;
                 leg[i].relative_pos=j;
                 set_flag=0;
@@ -21,12 +22,14 @@ void walk::set_leg_num(servo* leg,int rad){
         }
     }
 }
-
-int walk::walking(servo *leg,int rad){
+*/
+int walk::walking(servo *legs,int rad){
     
-    num_legs=sizeof(leg)/sizeof(leg[0]);
-    int8_t direction1=1*cos(rad);
-    int8_t direction2=1*sin(rad);
+    
+    num_legs=sizeof(legs)/sizeof(legs[0]);
+    int8_t x=1*cos(rad);
+    int8_t y=1*sin(rad);
+    /**
     if((!direction1)==0&&(!direction2==0)){
         //進行方向が斜めのときは機体を進行方向に向ける
         int nrad=INT_MAX;
@@ -37,13 +40,17 @@ int walk::walking(servo *leg,int rad){
             legs[i].move(x,y,z);
         }
     }
+    */
     
-    if(rad!=old_rad)set_leg_num(leg,rad);
+    //if(rad!=old_rad)set_leg_num(leg,rad);
    //initialize legs position------------- 
-    legs[0].move(x,y,z); 
-    legs[1].move(x,y,z); 
-    legs[2].move(x,y,z); 
-    legs[3].move(x,y,z); 
+    init_x=1/2;
+    init_y=1/2;
+    init_z=0;
+    legs[0].move(init_x,init_y,init_z); 
+    legs[1].move(init_x,init_y,init_z); 
+    legs[2].move(init_x,init_y,init_z); 
+    legs[3].move(init_x,init_y,init_z); 
   //------------------------------------
     legs[0].move(x,(2*y+offset_y)/2,z+offset_z); 
     legs[0].move(x,y+offset_y,z); 

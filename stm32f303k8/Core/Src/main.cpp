@@ -24,6 +24,9 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "can.hpp"
+#include "timer.hpp"
+#include "servo.hpp"
+#include "walk.hpp"
 #include <stdio.h>
 /* USER CODE END Includes */
 
@@ -52,9 +55,8 @@
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-//void CAN_RX0_IRQHandler(void);
-static void can_transmitdata(uint32_t stdid, uint32_t dlc, uint32_t grobaltime, int64_t data);
-static void can_receivedata(uint32_t stdid, uint32_t rtr, uint32_t dlc, uint32_t timestamp, uint32_t matchindex, int64_t data, CanFilterInit canfinit);
+static void can_transmitdata(uint32_t stdid, uint32_t dlc, uint32_t grobaltime, int8_t data[8]);
+static void can_receivedata(uint32_t stdid, uint32_t rtr, uint32_t dlc, uint32_t timestamp, uint32_t matchindex, int8_t data[8], CanFilterInit canfinit);
 static void System_Init();
 static void Can_Init();
 static void Can_Filter_Init();
@@ -116,17 +118,26 @@ int main(void)
   /* USER CODE BEGIN 2 */
   System_Init();
   Can_Init();
-  //Can_Msp_Init();
   Can_Filter_Init();
+  Timer1_PWM_Init(50,20,64);
+  Timer2_PWM_Init(50,20,64);
+  Timer3_PWM_Init(50,20,64);
+  Timer16_PWM_Init(50,20,64);  
 
+  //init leg servo {timer,channel}
+  servo_num s0[3]={{1,1},{1,2},{1,3}};
+  servo_num s1[3]={{2,1},{2,2},{2,3}};
+  servo_num s2[3]={{2,4},{3,1},{3,2}};
+  servo_num s3[3]={{3,3},{3,4},{16,1}};
+
+  servo legs[4]={s0,s1,s2,s3};
+  walk upper_leg;
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-  //printf("%ld",CAN->MSR&0b10);
-    //printf("%s","while1");
 #ifdef TRANSMITTER
     uint32_t id = 3;
     uint32_t datasize = 8;
@@ -138,7 +149,6 @@ int main(void)
       datasize = 8;
     can_transmitdata(id, datasize, gtime, data);
 #endif
-  //CAN_RX0_IRQHandler();
 
 
     /* USER CODE END WHILE */
@@ -192,19 +202,24 @@ extern "C"
     uint32_t rdatasize = 8;
     uint32_t timestamp = 0;
     uint32_t matchindex = 0;
-    int64_t rdata = -1;
+    int64_t rdata = NULL;
 
     // Error_Handler();
     can_receivedata(rid, rtr, rdatasize, timestamp, matchindex, rdata, cfinit);
+
+    //start move---------------------------------------------------------------
+    if(rdata!=NULL){
+      walk.
+    }
   }
 }
-void can_transmitdata(uint32_t stdid, uint32_t dlc, uint32_t grobaltime, int64_t data)
+void can_transmitdata(uint32_t stdid, uint32_t dlc, uint32_t grobaltime, int8_t data[8])
 {
   CanTxHeader cantxheader;
   cantxheader.transmit_id_StdId = stdid;
   cantxheader.transmit_datasize_DLC = dlc;
   cantxheader.transmit_grobaltime = grobaltime;
-  cantxheader.transmit_data = data;
+  for (int i=0;i<8;i++)cantxheader.transmit_data[i]=data[i];
 
   
 
@@ -213,7 +228,7 @@ void can_transmitdata(uint32_t stdid, uint32_t dlc, uint32_t grobaltime, int64_t
     ;
   // printf("%f", can_get_mailboxfreelevel()); // wait until transmit fiish
 }
-void can_receivedata(uint32_t stdid, uint32_t rtr, uint32_t dlc, uint32_t timestamp, uint32_t matchindex, int64_t data, CanFilterInit canfinit)
+void can_receivedata(uint32_t stdid, uint32_t rtr, uint32_t dlc, uint32_t timestamp, uint32_t matchindex, int8_t data[8], CanFilterInit canfinit)
 {
   CanRxHeader canrxheader;
   canrxheader.receive_id_StdId = stdid;
@@ -221,7 +236,7 @@ void can_receivedata(uint32_t stdid, uint32_t rtr, uint32_t dlc, uint32_t timest
   canrxheader.receive_datasize_DLC = dlc;
   canrxheader.receive_timestamp = timestamp;
   canrxheader.receive_filtermatchindex = matchindex;
-  canrxheader.receive_data = data;
+  for(int i=0;i<8;i++)canrxheader.receive_data[i] = data[i];
 
   can_get_rxmessage(canrxheader, canfinit);
 }

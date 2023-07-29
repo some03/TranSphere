@@ -9,7 +9,7 @@ class walk{
         walk();
         void init();
         int  walking(servo *leg,int theta);
-        void set_leg_num(servo* leg,int rad);
+        void set_leg_num(servo* leg,int ownrad);
         std::vector<servo>legs;
         int num_legs=0;
         int x,y,z;
