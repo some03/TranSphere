@@ -119,10 +119,12 @@ int main(void)
   System_Init();
   Can_Init();
   Can_Filter_Init();
-  Timer1_PWM_Init(50,20,64);
-  Timer2_PWM_Init(50,20,64);
-  Timer3_PWM_Init(50,20,64);
-  Timer16_PWM_Init(50,20,64);  
+
+  //timer count max 10000 pwm 50Hz 
+  Timer1_PWM_Init(10000,64);
+  Timer2_PWM_Init(10000,64);
+  Timer3_PWM_Init(10000,64);
+  Timer16_PWM_Init(10000,64);  
 
   //init leg servo {timer,channel}
   servo_num s0[3]={{1,1},{1,2},{1,3}};
@@ -142,13 +144,14 @@ int main(void)
     uint32_t id = 3;
     uint32_t datasize = 8;
     uint32_t gtime = 0;
-    int64_t data = 10;
+    int8_t data[8] ;
     // printf("%d\n",data);
 
     if (datasize > 8)
       datasize = 8;
     can_transmitdata(id, datasize, gtime, data);
 #endif
+    upper_leg.walking(legs,M_PI/2);
 
 
     /* USER CODE END WHILE */
@@ -202,14 +205,14 @@ extern "C"
     uint32_t rdatasize = 8;
     uint32_t timestamp = 0;
     uint32_t matchindex = 0;
-    int64_t rdata = NULL;
+    int8_t rdata[8] = {NULL};
 
     // Error_Handler();
     can_receivedata(rid, rtr, rdatasize, timestamp, matchindex, rdata, cfinit);
 
     //start move---------------------------------------------------------------
     if(rdata!=NULL){
-      walk.
+      
     }
   }
 }

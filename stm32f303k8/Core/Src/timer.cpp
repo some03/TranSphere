@@ -1,10 +1,9 @@
 #include "timer.hpp"
 
-void Timer1_PWM_Init(uint16_t frequency, uint16_t dutycircle, int16_t prescaler)
+void Timer1_PWM_Init(uint16_t count_max,int16_t prescaler)
 {
 
-  TIM1->ARR = frequency;   // set pwm frequency
-  TIM1->CCR1 = dutycircle; // set pwm duty circle
+  TIM1->ARR = count_max;   // set pwm frequency
   TIM1->PSC = prescaler;   // prescaler (64)
 
   TIM1->CCMR1 |= (0b0110 << 14); // CCMR1 OC2M pwm mode1
@@ -28,11 +27,10 @@ void Timer1_PWM_Init(uint16_t frequency, uint16_t dutycircle, int16_t prescaler)
   TIM1->CR1 |= 0b1; // timer2 enable
 }
 
-void Timer2_PWM_Init(uint16_t frequency, uint16_t dutycircle, int16_t prescaler)
+void Timer2_PWM_Init(uint16_t count_max, int16_t prescaler)
 {
 
-  TIM2->ARR = frequency;   // set pwm frequency
-  TIM2->CCR1 = dutycircle; // set pwm duty circle
+  TIM2->ARR = count_max;   // set pwm frequency
   TIM2->PSC = prescaler;   // prescaler (64)
 
   TIM2->CCMR1 |= (0b0110 << 14); // CCMR1 OC2M pwm mode1
@@ -56,11 +54,10 @@ void Timer2_PWM_Init(uint16_t frequency, uint16_t dutycircle, int16_t prescaler)
   TIM2->CR1 |= 0b1; // timer2 enable
 }
 
-void Timer3_PWM_Init(uint16_t frequency, uint16_t dutycircle, int16_t prescaler)
+void Timer3_PWM_Init(uint16_t count_max, int16_t prescaler)
 {
 
-  TIM3->ARR = frequency;   // set pwm frequency
-  TIM3->CCR1 = dutycircle; // set pwm duty circle
+  TIM3->ARR = count_max;   // set pwm frequency
   TIM3->PSC = prescaler;   // prescaler (64)
 
   TIM3->CCMR1 |= (0b0110 << 14); // CCMR1 OC2M pwm mode1
@@ -84,11 +81,10 @@ void Timer3_PWM_Init(uint16_t frequency, uint16_t dutycircle, int16_t prescaler)
   TIM3->CR1 |= 0b1; // timer3 enable
 }
 
-void Timer16_PWM_Init(uint16_t frequency, uint16_t dutycircle, int16_t prescaler)
+void Timer16_PWM_Init(uint16_t count_max,int16_t prescaler)
 {
 
-  TIM16->ARR = frequency;   // set pwm frequency
-  TIM16->CCR1 = dutycircle; // set pwm duty circle
+  TIM16->ARR = count_max;   // set pwm frequency
   TIM16->PSC = prescaler;   // prescaler (64)
 
   TIM16->CCMR1 |= (0b0110 << 14); // CCMR1 OC2M pwm mode1
