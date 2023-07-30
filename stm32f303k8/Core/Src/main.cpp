@@ -20,7 +20,7 @@
 #include "main.h"
 #include "usart.h"
 #include "gpio.h"
-
+#include "i2c.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "can.hpp"
@@ -37,8 +37,9 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define TRANSMITTER
-#define RECEIVER
+//#define TRANSMITTER
+//#define RECEIVER
+#define MPU9250_ADDRESS 0
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -60,6 +61,7 @@ static void can_receivedata(uint32_t stdid, uint32_t rtr, uint32_t dlc, uint32_t
 static void System_Init();
 static void Can_Init();
 static void Can_Filter_Init();
+static void MPU9250_GetData();
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -115,6 +117,7 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USART2_UART_Init();
+  MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
   System_Init();
   Can_Init();
@@ -134,17 +137,29 @@ int main(void)
 
   servo legs[4]={s0,s1,s2,s3};
   walk upper_leg;
+
+  //wake up mpu 9250---------------
+  uint8_t wu[1]={0};
+  HAL_I2C_Mem_Write(&hi2c1,MPU9250_ADDRESS,0x6b,I2C_MEMADD_SIZE_8BIT,wu,0x01,100);
+  
+  //set accelsensor  range----------
+  uint8_t st[1]={0x18};
+  HAL_I2C_Mem_Write(&hi2c1,MPU9250_ADDRESS,0x1c,I2C_MEMADD_SIZE_8BIT,st,0x01,100);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+#ifdef MPU9250
+    MPU9250_GetData();
+#endif
+
 #ifdef TRANSMITTER
     uint32_t id = 3;
     uint32_t datasize = 8;
     uint32_t gtime = 0;
-    int8_t data[8] ;
+    int8_t data[8];
     // printf("%d\n",data);
 
     if (datasize > 8)
@@ -283,6 +298,33 @@ static void Can_Filter_Init()
 
   can_filter_init(cfinit);
 }
+
+static void MPU9250_GetData(){
+
+    uint16_t accel_x, accel_y, accel_z;
+    uint16_t gyro_x, gyro_y, gyro_z;
+
+    HAL_I2C_Mem_Read(&hi2c1,MPU9250_ADDRESS,0x3b,I2C_MEMADD_SIZE_8BIT,(uint8_t*)accel_x,8,100);
+    accel_x<<0x8;
+    HAL_I2C_Mem_Read(&hi2c1,MPU9250_ADDRESS,0x3c,I2C_MEMADD_SIZE_8BIT,(uint8_t*)accel_x,8,100);
+    HAL_I2C_Mem_Read(&hi2c1,MPU9250_ADDRESS,0x3d,I2C_MEMADD_SIZE_8BIT,(uint8_t*)accel_y,8,100);
+    accel_y<<0x08;
+    HAL_I2C_Mem_Read(&hi2c1,MPU9250_ADDRESS,0x3e,I2C_MEMADD_SIZE_8BIT,(uint8_t*)accel_y,8,100);
+    HAL_I2C_Mem_Read(&hi2c1,MPU9250_ADDRESS,0x3f,I2C_MEMADD_SIZE_8BIT,(uint8_t*)accel_z,8,100);
+    accel_z<<0x08;
+    HAL_I2C_Mem_Read(&hi2c1,MPU9250_ADDRESS,0x40,I2C_MEMADD_SIZE_8BIT,(uint8_t*)accel_z,8,100);
+
+
+    HAL_I2C_Mem_Read(&hi2c1,MPU9250_ADDRESS,0x43,I2C_MEMADD_SIZE_8BIT,(uint8_t*)gyro_x,8,100);
+    gyro_x<<0x08;
+    HAL_I2C_Mem_Read(&hi2c1,MPU9250_ADDRESS,0x44,I2C_MEMADD_SIZE_8BIT,(uint8_t*)gyro_x,8,100);
+    HAL_I2C_Mem_Read(&hi2c1,MPU9250_ADDRESS,0x45,I2C_MEMADD_SIZE_8BIT,(uint8_t*)gyro_y,8,100);
+    gyro_y<<0x08;
+    HAL_I2C_Mem_Read(&hi2c1,MPU9250_ADDRESS,0x46,I2C_MEMADD_SIZE_8BIT,(uint8_t*)gyro_y,8,100);
+    HAL_I2C_Mem_Read(&hi2c1,MPU9250_ADDRESS,0x47,I2C_MEMADD_SIZE_8BIT,(uint8_t*)gyro_z,8,100);
+    gyro_z<<0x08;
+    HAL_I2C_Mem_Read(&hi2c1,MPU9250_ADDRESS,0x48,I2C_MEMADD_SIZE_8BIT,(uint8_t*)gyro_z,8,100);
+};
 /* USER CODE END 4 */
 
 /**
