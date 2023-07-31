@@ -62,4 +62,7 @@ int walk::walking(servo *legs,int rad){
     old_rad=rad;
     return 0;
 }
+void spraddle_legs(servo_num s,int rad){
+
+}
 

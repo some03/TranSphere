@@ -135,6 +135,7 @@ int main(void)
   servo_num s2[3]={{2,4},{3,1},{3,2}};
   servo_num s3[3]={{3,3},{3,4},{16,1}};
 
+  servo_num center_s={17,1};
   servo legs[4]={s0,s1,s2,s3};
   walk upper_leg;
 
@@ -166,8 +167,9 @@ int main(void)
       datasize = 8;
     can_transmitdata(id, datasize, gtime, data);
 #endif
-    upper_leg.walking(legs,M_PI/2);
 
+    upper_leg.spraddle_legs(center_s,50);
+    upper_leg.walking(legs,M_PI/2);
 
     /* USER CODE END WHILE */
     /* USER CODE BEGIN 3 */

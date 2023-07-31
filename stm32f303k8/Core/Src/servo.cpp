@@ -42,3 +42,7 @@ void servo::move(double x,double y,double z){
         PWM_Start(servo0.timer,servo0.channel,s0);
     }
 }
+void servo::move_one(servo_num s,int rad){
+
+    PWM_Start(s.timer,s.channel,rad);
+}
