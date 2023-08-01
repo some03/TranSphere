@@ -128,14 +128,15 @@ int main(void)
   Timer2_PWM_Init(10000,64);
   Timer3_PWM_Init(10000,64);
   Timer16_PWM_Init(10000,64);  
+  Timer17_PWM_Init(10000,64);  
 
   //init leg servo {timer,channel}
-  servo_num s0[3]={{1,1},{1,2},{1,3}};
-  servo_num s1[3]={{2,1},{2,2},{2,3}};
-  servo_num s2[3]={{2,4},{3,1},{3,2}};
-  servo_num s3[3]={{3,3},{3,4},{16,1}};
+  servo_num s0[3]={{1,1},{1,2},{1,3}};//PA8 PA9 PA10
+  servo_num s1[3]={{2,1},{2,2},{2,3}};//PA0 PA1 PA2 
+  servo_num s2[3]={{2,4},{3,1},{3,2}};//PA3 PA6 PA4 
+  servo_num s3[3]={{3,3},{3,4},{16,1}};//PB0 PB1 PB4
 
-  servo_num center_s={17,1};
+  servo_num center_s={17,1};//PA7
   servo legs[4]={s0,s1,s2,s3};
   walk upper_leg;
 

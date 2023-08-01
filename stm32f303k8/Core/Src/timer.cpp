@@ -108,6 +108,32 @@ void Timer16_PWM_Init(uint16_t count_max,int16_t prescaler)
   TIM16->CR1 |= 0b1; // timer3 enable
 }
 
+void Timer17_PWM_Init(uint16_t count_max,int16_t prescaler)
+{
+
+  TIM17->ARR = count_max;   // set pwm frequency
+  TIM17->PSC = prescaler;   // prescaler (64)
+
+  TIM17->CCMR1 |= (0b0110 << 14); // CCMR1 OC2M pwm mode1
+  TIM17->CCMR1 |= (0b0110 << 6);  // CCMR1 OC1M pwm mode1
+  TIM17->CCMR2 |= (0b0110 << 14); // CCMR2 OC2M pwm mode1
+  TIM17->CCMR2 |= (0b0110 << 6);  // CCMR2 OC1M pwm mode1
+
+  TIM17->CCMR1 |= (0b1 << 11); // CCMR1 OC3PE enable
+  TIM17->CCMR1 |= (0b1 << 3);  // CCMR1 OC1PE enable
+  TIM17->CCMR3 |= (0b1 << 11); // CCMR3 OC3PE enable
+  TIM17->CCMR3 |= (0b1 << 3);  // CCMR3 OC1PE enable
+
+  TIM17->CR1 |= (0b1 << 7); // ARPE auto preloard enbale
+  TIM17->EGR |= 0b1;        // set UG counter reset
+
+  // TIM4->CCER|=0b1;//CH1 enable
+  // TIM4->CCER|=(0b1<<4);//CH3 enable
+  // TIM4->CCER|=(0b1<<8);//CH3 enable
+  // TIM4->CCER|=(0b1<<13);//CH4 enable
+
+  TIM17->CR1 |= 0b1; // timer3 enable
+}
 void PWM_Start(int8_t timer, int8_t ch, int16_t duty)
 {
 
