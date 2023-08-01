@@ -1,6 +1,15 @@
 #include<walk.hpp>
 #include<math.h>
 #include<climits>
+#include"servo.hpp"
+
+walk::walk(tr_legs *leg,servo_num s){
+
+    num_legs=sizeof(leg)/sizeof(leg[0]);
+    for(int i=0;i<num_legs;i++)legs.push_back(leg[i]);
+
+    center_s=s;
+}
 /*
 void walk::set_leg_num(servo* leg,int ownrad){
         
@@ -23,7 +32,7 @@ void walk::set_leg_num(servo* leg,int ownrad){
     }
 }
 */
-int walk::walking(servo *legs,int rad){
+int walk::walking(int rad){
     
     
     num_legs=sizeof(legs)/sizeof(legs[0]);
@@ -62,7 +71,9 @@ int walk::walking(servo *legs,int rad){
     old_rad=rad;
     return 0;
 }
-void spraddle_legs(servo_num s,int rad){
+void walk::spraddle_legs(int rad){
+
+    Servo_Start(center_s,rad);
 
 }
 

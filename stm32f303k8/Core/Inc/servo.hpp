@@ -1,24 +1,9 @@
-#ifndef SERVO
-#define SERVO
+#include"timer.hpp"
 #include<math.h>
-#include<algorithm>
-#include<stdint.h>
-class  servo{
-    public:
-        servo(){;}
-        servo(servo_num* s);
-        void move(double x,double y ,double z);
-        void move_one(servo_num s,int rad );
-        void init();
-        int s0,s1,s2,s3;
-        int pin[3],position,relative_pos;
-        double d=1,af=1, h, z;
-        float r1,r2;
-        servo_num servo0;
-        servo_num servo1;
-        servo_num servo2;
-        servo_num servo3;
-};
+
+#define psc 10000
+#define duty_max 0.1
+#define duty_min 0.05
 struct servo_num
 {
     int timer;
@@ -26,4 +11,9 @@ struct servo_num
     /* data */
 };
 
-#endif
+void Servo_Start(servo_num s,int rad){
+
+    float p=((rad/M_PI)+duty_min)*psc;
+    if(p>duty_max)p=duty_max;
+    PWM_Start(s.timer,s.channel,p);
+}

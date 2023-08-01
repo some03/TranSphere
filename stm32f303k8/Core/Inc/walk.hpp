@@ -1,16 +1,18 @@
 #ifndef WALK
 #define WALK
 #include<unistd.h>
-#include<servo.hpp>
+#include"servo.hpp"
+#include"tr_legs.hpp"
 #include<vector>
 
 class walk{
     public:
-        walk();
-        void init();
-        int  walking(servo *leg,int theta);
-        void set_leg_num(servo* leg,int ownrad);
-        std::vector<servo>legs;
+        walk(tr_legs *leg_,servo_num s);
+        int  walking(int theta);
+        void spraddle_legs(int rad);
+        void set_leg_num(tr_legs *leg,int ownrad);
+        std::vector<tr_legs>legs;
+        servo_num center_s;
         int num_legs=0;
         int x,y,z;
         int init_x,init_y,init_z;
