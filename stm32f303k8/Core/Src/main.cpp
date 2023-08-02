@@ -24,8 +24,6 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "can.hpp"
-#include "timer.hpp"
-#include "servo.hpp"
 #include "walk.hpp"
 #include <stdio.h>
 /* USER CODE END Includes */
@@ -171,7 +169,6 @@ int main(void)
 
     upper_leg.spraddle_legs(M_PI/2);
     upper_leg.walking(M_PI/2);
-
     /* USER CODE END WHILE */
     /* USER CODE BEGIN 3 */
   }

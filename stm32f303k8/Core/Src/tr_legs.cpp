@@ -31,7 +31,3 @@ void tr_legs::move(double x,double y,double z){
         Servo_Start(servo0,s0);
     }
 }
-/*void servo::move_one(servo_num servo3,int rad){
-
-    PWM_Start(servo3.timer,servo3.channel,rad);
-}*/

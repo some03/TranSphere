@@ -1,8 +1,7 @@
 #include<walk.hpp>
 #include<math.h>
 #include<climits>
-#include"servo.hpp"
-
+#include"walk.hpp"
 walk::walk(tr_legs *leg,servo_num s){
 
     num_legs=sizeof(leg)/sizeof(leg[0]);

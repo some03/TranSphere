@@ -1,5 +1,5 @@
-#ifndef WALK
-#define WALK
+#ifndef WALK_H
+#define WALK_H
 #include<unistd.h>
 #include"servo.hpp"
 #include"tr_legs.hpp"

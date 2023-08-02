@@ -1,0 +1,3 @@
+/home/akane/ros2_ws/src/TranSphere/stm32f303k8/build/debug/build/CMakeFiles/TS_mainboard.dir
+/home/akane/ros2_ws/src/TranSphere/stm32f303k8/build/debug/build/CMakeFiles/edit_cache.dir
+/home/akane/ros2_ws/src/TranSphere/stm32f303k8/build/debug/build/CMakeFiles/rebuild_cache.dir

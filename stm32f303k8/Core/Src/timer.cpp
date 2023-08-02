@@ -1,4 +1,6 @@
+#include "stm32f3xx.h"
 #include "timer.hpp"
+
 
 void Timer1_PWM_Init(uint16_t count_max,int16_t prescaler)
 {

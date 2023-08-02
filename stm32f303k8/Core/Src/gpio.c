@@ -46,7 +46,6 @@ void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
 
 /* USER CODE BEGIN 2 */
-  GPIO_InitTypeDef GPIO_InitStruct = {0};
   /* CAN clock enable */
   __HAL_RCC_CAN1_CLK_ENABLE();
 
