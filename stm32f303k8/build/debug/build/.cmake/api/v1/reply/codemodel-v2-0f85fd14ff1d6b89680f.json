@@ -6,7 +6,6 @@
 			[
 				{
 					"build" : ".",
-					"jsonFile" : "directory-.-Debug-f5ebdc15457944623624.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.20"
@@ -39,7 +38,7 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "TS_mainboard::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-TS_mainboard-Debug-f8acc5f9201e1c9b84f9.json",
+					"jsonFile" : "target-TS_mainboard-Debug-9884797cdacf465700ca.json",
 					"name" : "TS_mainboard",
 					"projectIndex" : 0
 				}
@@ -55,6 +54,6 @@
 	"version" : 
 	{
 		"major" : 2,
-		"minor" : 3
+		"minor" : 2
 	}
 }

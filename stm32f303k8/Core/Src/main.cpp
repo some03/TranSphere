@@ -54,12 +54,14 @@
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
+
 static void can_transmitdata(uint32_t stdid, uint32_t dlc, uint32_t grobaltime, int8_t data[8]);
 static void can_receivedata(uint32_t stdid, uint32_t rtr, uint32_t dlc, uint32_t timestamp, uint32_t matchindex, int8_t data[8], CanFilterInit canfinit);
 static void System_Init();
 static void Can_Init();
 static void Can_Filter_Init();
 static void MPU9250_GetData();
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -82,6 +84,7 @@ extern "C"
     return 0;
   }
 }
+
 /* USER CODE END 0 */
 
 /**
@@ -92,8 +95,7 @@ int main(void)
 {
   /* USER CODE BEGIN 1 */
   setbuf(stdout, NULL);
-//  DBGMCU->APB1FZ|=DBGMCU_APB1_FZ_DBG_WWDG_STOP;
-  //WWDG->CR&=~(0b1<<7);
+
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -106,7 +108,7 @@ int main(void)
   /* USER CODE END Init */
 
   /* Configure the system clock */
-  // SystemClock_Config();
+   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
 
@@ -116,12 +118,15 @@ int main(void)
   MX_GPIO_Init();
   MX_USART2_UART_Init();
   MX_I2C1_Init();
+
   /* USER CODE BEGIN 2 */
-  System_Init();
+
+  //System_Init();
   Can_Init();
   Can_Filter_Init();
 
   //timer count max 10000 pwm 50Hz 
+  
   Timer1_PWM_Init(10000,64);
   Timer2_PWM_Init(10000,64);
   Timer3_PWM_Init(10000,64);
@@ -137,8 +142,10 @@ int main(void)
   servo_num center_s={17,1};//PA7
   tr_legs legs[4]={s0,s1,s2,s3};
   walk upper_leg(legs,center_s);
+  
 
   //wake up mpu 9250---------------
+  /*
   uint8_t wu[1]={0};
   HAL_I2C_Mem_Write(&hi2c1,MPU9250_ADDRESS,0x6b,I2C_MEMADD_SIZE_8BIT,wu,0x01,100);
   
@@ -151,6 +158,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  
 #ifdef MPU9250
     MPU9250_GetData();
 #endif
@@ -159,7 +167,7 @@ int main(void)
     uint32_t id = 3;
     uint32_t datasize = 8;
     uint32_t gtime = 0;
-    int8_t data[8];
+    int8_t data[8]={10};
     // printf("%d\n",data);
 
     if (datasize > 8)
@@ -167,9 +175,10 @@ int main(void)
     can_transmitdata(id, datasize, gtime, data);
 #endif
 
-    upper_leg.spraddle_legs(M_PI/2);
-    upper_leg.walking(M_PI/2);
+    //upper_leg.spraddle_legs(M_PI/2);
+    //upper_leg.walking(M_PI/2);
     /* USER CODE END WHILE */
+
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -183,34 +192,45 @@ void SystemClock_Config(void)
 {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+  RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
 
   /** Initializes the RCC Oscillators according to the specified parameters
-   * in the RCC_OscInitTypeDef structure.
-   */
+  * in the RCC_OscInitTypeDef structure.
+  */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
+  RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL16;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
   }
 
   /** Initializes the CPU, AHB and APB buses clocks
-   */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
+  */
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_I2C1|RCC_PERIPHCLK_TIM1;
+  PeriphClkInit.I2c1ClockSelection = RCC_I2C1CLKSOURCE_SYSCLK;
+  PeriphClkInit.Tim1ClockSelection = RCC_TIM1CLK_HCLK;
+  if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
   {
     Error_Handler();
   }
 }
-
 /* USER CODE BEGIN 4 */
+
 extern "C"
 {
   void CAN_RX0_IRQHandler(void)
@@ -227,7 +247,7 @@ extern "C"
 
     //start move---------------------------------------------------------------
     if(rdata!=NULL){
-      
+      printf("%d",rdata); 
     }
   }
 }
@@ -276,7 +296,7 @@ static void Can_Init()
   caninit.mcr_fifo_lock = 0;     // enable fifo lockmode
   caninit.mcr_fifo_priority = 0; // Priority is determined by the order of requests (0: identifier of message)
   caninit.btr_debug_silent = 0;
-  caninit.btr_debug_loopback = 1;
+  caninit.btr_debug_loopback = 0;
   caninit.btr_prescalar = 0b100;
   caninit.btr_swj = 1;
   caninit.btr_tseg1 = 0b1011;
@@ -324,7 +344,7 @@ static void MPU9250_GetData(){
     HAL_I2C_Mem_Read(&hi2c1,MPU9250_ADDRESS,0x47,I2C_MEMADD_SIZE_8BIT,(uint8_t*)gyro_z,8,100);
     gyro_z<<0x08;
     HAL_I2C_Mem_Read(&hi2c1,MPU9250_ADDRESS,0x48,I2C_MEMADD_SIZE_8BIT,(uint8_t*)gyro_z,8,100);
-};
+}
 /* USER CODE END 4 */
 
 /**

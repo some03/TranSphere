@@ -79,9 +79,7 @@
 				"cxx",
 				"mm",
 				"mpp",
-				"CPP",
-				"ixx",
-				"cppm"
+				"CPP"
 			]
 		}
 	],

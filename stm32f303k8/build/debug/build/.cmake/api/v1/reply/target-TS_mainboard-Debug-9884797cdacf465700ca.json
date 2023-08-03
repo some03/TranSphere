@@ -157,13 +157,14 @@
 				16,
 				18,
 				19,
-				22,
+				20,
 				23,
 				24,
 				25,
 				26,
 				27,
-				30
+				28,
+				31
 			]
 		},
 		{
@@ -231,11 +232,11 @@
 			"sourceIndexes" : 
 			[
 				17,
-				20,
 				21,
-				28,
+				22,
 				29,
-				31
+				30,
+				32
 			]
 		},
 		{
@@ -271,7 +272,7 @@
 			"language" : "ASM",
 			"sourceIndexes" : 
 			[
-				32
+				33
 			]
 		}
 	],
@@ -360,14 +361,15 @@
 				28,
 				29,
 				30,
-				31
+				31,
+				32
 			]
 		},
 		{
 			"name" : "",
 			"sourceIndexes" : 
 			[
-				32
+				33
 			]
 		}
 	],
@@ -491,6 +493,12 @@
 			"backtrace" : 7,
 			"compileGroupIndex" : 0,
 			"path" : "Core/Src/i2c.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 7,
+			"compileGroupIndex" : 0,
+			"path" : "Core/Src/main.c",
 			"sourceGroupIndex" : 0
 		},
 		{

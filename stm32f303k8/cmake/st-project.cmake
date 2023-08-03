@@ -107,6 +107,7 @@ target_sources(
     "Core/Src/can.cpp"
     "Core/Src/gpio.c"
     "Core/Src/i2c.c"
+    "Core/Src/main.c"
     "Core/Src/main.cpp"
     "Core/Src/servo.cpp"
     "Core/Src/stm32f3xx_hal_msp.c"

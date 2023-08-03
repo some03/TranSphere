@@ -203,7 +203,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "22"
+			"value" : "20"
 		},
 		{
 			"name" : "CMAKE_CACHE_PATCH_VERSION",
@@ -227,7 +227,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/usr/bin/cmake"
+			"value" : "/home/akane/.config/Code/User/globalStorage/ms-vscode.vscode-embedded-tools/vcpkg/root/downloads/artifacts/vcpkg-ce-default/tools.kitware.cmake/3.20.1/bin/cmake"
 		},
 		{
 			"name" : "CMAKE_CPACK_COMMAND",
@@ -239,7 +239,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/usr/bin/cpack"
+			"value" : "/home/akane/.config/Code/User/globalStorage/ms-vscode.vscode-embedded-tools/vcpkg/root/downloads/artifacts/vcpkg-ce-default/tools.kitware.cmake/3.20.1/bin/cpack"
 		},
 		{
 			"name" : "CMAKE_CTEST_COMMAND",
@@ -251,7 +251,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/usr/bin/ctest"
+			"value" : "/home/akane/.config/Code/User/globalStorage/ms-vscode.vscode-embedded-tools/vcpkg/root/downloads/artifacts/vcpkg-ce-default/tools.kitware.cmake/3.20.1/bin/ctest"
 		},
 		{
 			"name" : "CMAKE_CXX_COMPILER_AR",
@@ -931,7 +931,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/usr/share/cmake-3.22"
+			"value" : "/home/akane/.config/Code/User/globalStorage/ms-vscode.vscode-embedded-tools/vcpkg/root/downloads/artifacts/vcpkg-ce-default/tools.kitware.cmake/3.20.1/share/cmake-3.20"
 		},
 		{
 			"name" : "CMAKE_SHARED_LINKER_FLAGS",
