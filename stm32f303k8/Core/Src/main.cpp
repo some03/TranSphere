@@ -35,7 +35,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-//#define TRANSMITTER
+#define TRANSMITTER
 //#define RECEIVER
 #define MPU9250_ADDRESS 0
 /* USER CODE END PD */
@@ -296,7 +296,7 @@ static void Can_Init()
   caninit.mcr_fifo_lock = 0;     // enable fifo lockmode
   caninit.mcr_fifo_priority = 0; // Priority is determined by the order of requests (0: identifier of message)
   caninit.btr_debug_silent = 0;
-  caninit.btr_debug_loopback = 0;
+  caninit.btr_debug_loopback = 1;//1 enable 0 disable
   caninit.btr_prescalar = 0b100;
   caninit.btr_swj = 1;
   caninit.btr_tseg1 = 0b1011;
