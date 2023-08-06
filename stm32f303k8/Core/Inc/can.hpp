@@ -39,7 +39,8 @@ typedef struct _CanTxHeader{
    uint32_t transmit_id_StdId;
    uint32_t transmit_datasize_DLC;
    uint32_t transmit_grobaltime;
-   int8_t  transmit_data[8];
+   uint32_t  transmit_data[8];
+   uint32_t  watch;
 }CanTxHeader;
 
 typedef struct _CanRxHeader{
@@ -48,7 +49,7 @@ typedef struct _CanRxHeader{
    uint32_t receive_datasize_DLC;
    uint32_t receive_timestamp;
    uint32_t receive_filtermatchindex;
-   int8_t  receive_data[8];
+   uint32_t  receive_data[8];
 }CanRxHeader;
 
 uint32_t system_init(SYSTEMInit &sysinit);

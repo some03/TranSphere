@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <stdio.h>
 #include "can.hpp"
 #include "stm32f3xx.h"
 #define bits 1
@@ -57,6 +58,8 @@ uint32_t can_init(CanInit &caninit)
     WWDG->SR = 0;
     NVIC_ClearPendingIRQ(WWDG_IRQn);
     NVIC_DisableIRQ(WWDG_IRQn);
+   //----------------------------------- 
+    
     CAN->MCR &= ~(0b10); // unlock sleep mode
     while (!(CAN->MSR & 0b10))
     {
@@ -145,15 +148,19 @@ int32_t can_add_txmessage(CanTxHeader &cantxhed)
     if (cantxhed.transmit_grobaltime)
         CAN->sTxMailBox[transmitmailbox].TDTR |= bits << 8;                         // enable transmit grobaltime
 
-    CAN->sTxMailBox[transmitmailbox].TDHR = (cantxhed.transmit_data[7] <<CAN_TDH0R_DATA7); // set low data
-    CAN->sTxMailBox[transmitmailbox].TDHR = (cantxhed.transmit_data[6] <<CAN_TDH0R_DATA6); // set low data
-    CAN->sTxMailBox[transmitmailbox].TDHR = (cantxhed.transmit_data[5] <<CAN_TDH0R_DATA5); // set low data
-    CAN->sTxMailBox[transmitmailbox].TDHR = (cantxhed.transmit_data[4] <<CAN_TDH0R_DATA4); // set low data
-    
-    CAN->sTxMailBox[transmitmailbox].TDLR = (cantxhed.transmit_data[3] <<CAN_TDL0R_DATA3);  // set low data
-    CAN->sTxMailBox[transmitmailbox].TDLR = (cantxhed.transmit_data[2] <<CAN_TDL0R_DATA2);  // set low data
-    CAN->sTxMailBox[transmitmailbox].TDLR = (cantxhed.transmit_data[1] <<CAN_TDL0R_DATA1);  // set low data
-    CAN->sTxMailBox[transmitmailbox].TDLR = (cantxhed.transmit_data[0] <<CAN_TDL0R_DATA0);  // set low data
+     
+    CAN->sTxMailBox[transmitmailbox].TDHR =0x00;
+    CAN->sTxMailBox[transmitmailbox].TDHR |= (cantxhed.transmit_data[7] <<CAN_TDH0R_DATA7_Pos); // set low data
+    CAN->sTxMailBox[transmitmailbox].TDHR |= (cantxhed.transmit_data[6] <<CAN_TDH0R_DATA6_Pos); // set low data
+    CAN->sTxMailBox[transmitmailbox].TDHR |= (cantxhed.transmit_data[5] <<CAN_TDH0R_DATA5_Pos); // set low data
+    CAN->sTxMailBox[transmitmailbox].TDHR |= (cantxhed.transmit_data[4] <<CAN_TDH0R_DATA4_Pos); // set low data
+
+
+    CAN->sTxMailBox[transmitmailbox].TDLR =0x00; 
+    CAN->sTxMailBox[transmitmailbox].TDLR |= (cantxhed.transmit_data[3] <<CAN_TDL0R_DATA3_Pos);  // set low data
+    CAN->sTxMailBox[transmitmailbox].TDLR |= (cantxhed.transmit_data[2] <<CAN_TDL0R_DATA2_Pos);  // set low data
+    CAN->sTxMailBox[transmitmailbox].TDLR |= (cantxhed.transmit_data[1] <<CAN_TDL0R_DATA1_Pos);  // set low data
+    CAN->sTxMailBox[transmitmailbox].TDLR |= (cantxhed.transmit_data[0] <<CAN_TDL0R_DATA0_Pos);  // set low data
     
     CAN->sTxMailBox[transmitmailbox].TIR = bits;                                    // request transmit
 
@@ -183,10 +190,11 @@ int32_t can_get_rxmessage(CanRxHeader &canrxhed, CanFilterInit canfilinit)
     canrxhed.receive_data[1] = (CAN_RDL0R_DATA1&CAN->sFIFOMailBox[canfilinit.fm1r_fifo_number].RDLR)>>CAN_RDL0R_DATA1_Pos; // read data HIGH
     canrxhed.receive_data[2] = (CAN_RDL0R_DATA2&CAN->sFIFOMailBox[canfilinit.fm1r_fifo_number].RDLR)>>CAN_RDL0R_DATA2_Pos; // read data HIGH
     canrxhed.receive_data[3] = (CAN_RDL0R_DATA3&CAN->sFIFOMailBox[canfilinit.fm1r_fifo_number].RDLR)>>CAN_RDL0R_DATA3_Pos; // read data HIGH
-    canrxhed.receive_data[4] = (CAN_RDH0R_DATA4&CAN->sFIFOMailBox[canfilinit.fm1r_fifo_number].RDLR)>>CAN_RDH0R_DATA4_Pos;              // read data LOW
-    canrxhed.receive_data[5] = (CAN_RDH0R_DATA5&CAN->sFIFOMailBox[canfilinit.fm1r_fifo_number].RDLR)>>CAN_RDH0R_DATA5_Pos;              // read data LOW
-    canrxhed.receive_data[6] = (CAN_RDH0R_DATA6&CAN->sFIFOMailBox[canfilinit.fm1r_fifo_number].RDLR)>>CAN_RDH0R_DATA6_Pos;              // read data LOW
-    canrxhed.receive_data[7] = (CAN_RDH0R_DATA7&CAN->sFIFOMailBox[canfilinit.fm1r_fifo_number].RDLR)>>CAN_RDH0R_DATA7_Pos;              // read data LOW
+    canrxhed.receive_data[4] = (CAN_RDH0R_DATA4&CAN->sFIFOMailBox[canfilinit.fm1r_fifo_number].RDHR)>>CAN_RDH0R_DATA4_Pos; // read data LOW
+    canrxhed.receive_data[5] = (CAN_RDH0R_DATA5&CAN->sFIFOMailBox[canfilinit.fm1r_fifo_number].RDHR)>>CAN_RDH0R_DATA5_Pos; // read data LOW
+    canrxhed.receive_data[6] = (CAN_RDH0R_DATA6&CAN->sFIFOMailBox[canfilinit.fm1r_fifo_number].RDHR)>>CAN_RDH0R_DATA6_Pos; // read data LOW
+    canrxhed.receive_data[7] = (CAN_RDH0R_DATA7&CAN->sFIFOMailBox[canfilinit.fm1r_fifo_number].RDHR)>>CAN_RDH0R_DATA7_Pos; // read data LOW
+    
 
     return 0;
 }

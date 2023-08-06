@@ -36,7 +36,7 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 #define TRANSMITTER
-//#define RECEIVER
+// #define RECEIVER
 #define MPU9250_ADDRESS 0
 /* USER CODE END PD */
 
@@ -55,8 +55,8 @@
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
 
-static void can_transmitdata(uint32_t stdid, uint32_t dlc, uint32_t grobaltime, int8_t data[8]);
-static void can_receivedata(uint32_t stdid, uint32_t rtr, uint32_t dlc, uint32_t timestamp, uint32_t matchindex, int8_t data[8], CanFilterInit canfinit);
+static void can_transmitdata(uint32_t stdid, uint32_t dlc, uint32_t grobaltime, uint32_t data[8]);
+static void can_receivedata(uint32_t stdid, uint32_t rtr, uint32_t dlc, uint32_t timestamp, uint32_t matchindex, uint32_t data[8], CanFilterInit canfinit);
 static void System_Init();
 static void Can_Init();
 static void Can_Filter_Init();
@@ -72,16 +72,10 @@ extern "C" void CAN_RX0_IRQHandler(void);
 // for use printf
 extern "C"
 {
-  int __io_putchar(int c)
+  int _write(int file, char *ptr, int len)
   {
-    if (c == '\n')
-    {
-      int b = '\r';
-      HAL_UART_Transmit(&huart2, (uint8_t *)&b, 1, 1);
-    }
-
-    HAL_UART_Transmit(&huart2, (uint8_t *)&c, 1, 1);
-    return 0;
+    HAL_UART_Transmit(&huart2, (uint8_t *)ptr, len, 10);
+    return len;
   }
 }
 
@@ -108,7 +102,7 @@ int main(void)
   /* USER CODE END Init */
 
   /* Configure the system clock */
-   SystemClock_Config();
+  SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
 
@@ -117,38 +111,38 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USART2_UART_Init();
-  MX_I2C1_Init();
+  // MX_I2C1_Init();
 
   /* USER CODE BEGIN 2 */
 
-  //System_Init();
+  // System_Init();
   Can_Init();
   Can_Filter_Init();
 
-  //timer count max 10000 pwm 50Hz 
-  
-  Timer1_PWM_Init(10000,64);
-  Timer2_PWM_Init(10000,64);
-  Timer3_PWM_Init(10000,64);
-  Timer16_PWM_Init(10000,64);  
-  Timer17_PWM_Init(10000,64);  
+  // timer count max 10000 pwm 50Hz
+  /*
+  Timer1_PWM_Init(10000, 64);
+  Timer2_PWM_Init(10000, 64);
+  Timer3_PWM_Init(10000, 64);
+  Timer16_PWM_Init(10000, 64);
+  Timer17_PWM_Init(10000, 64);
 
-  //init leg servo {timer,channel}
-  servo_num s0[3]={{1,1},{1,2},{1,3}};//PA8 PA9 PA10
-  servo_num s1[3]={{2,1},{2,2},{2,3}};//PA0 PA1 PA2 
-  servo_num s2[3]={{2,4},{3,1},{3,2}};//PA3 PA6 PA4 
-  servo_num s3[3]={{3,3},{3,4},{16,1}};//PB0 PB1 PB4
+  // init leg servo {timer,channel}
+  servo_num s0[3] = {{1, 1}, {1, 2}, {1, 3}};  // PA8 PA9 PA10
+  servo_num s1[3] = {{2, 1}, {2, 2}, {2, 3}};  // PA0 PA1 PA2
+  servo_num s2[3] = {{2, 4}, {3, 1}, {3, 2}};  // PA3 PA6 PA4
+  servo_num s3[3] = {{3, 3}, {3, 4}, {16, 1}}; // PB0 PB1 PB4
 
-  servo_num center_s={17,1};//PA7
-  tr_legs legs[4]={s0,s1,s2,s3};
-  walk upper_leg(legs,center_s);
-  
+  servo_num center_s = {17, 1}; // PA7
+  tr_legs legs[4] = {s0, s1, s2, s3};
+  walk upper_leg(legs, center_s);
+  */
 
-  //wake up mpu 9250---------------
+  // wake up mpu 9250---------------
   /*
   uint8_t wu[1]={0};
   HAL_I2C_Mem_Write(&hi2c1,MPU9250_ADDRESS,0x6b,I2C_MEMADD_SIZE_8BIT,wu,0x01,100);
-  
+
   //set accelsensor  range----------
   uint8_t st[1]={0x18};
   HAL_I2C_Mem_Write(&hi2c1,MPU9250_ADDRESS,0x1c,I2C_MEMADD_SIZE_8BIT,st,0x01,100);
@@ -158,25 +152,24 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  
 #ifdef MPU9250
     MPU9250_GetData();
 #endif
 
+//printf("%d\n", 1);
 #ifdef TRANSMITTER
     uint32_t id = 3;
     uint32_t datasize = 8;
     uint32_t gtime = 0;
-    int8_t data[8]={10};
-    // printf("%d\n",data);
+    uint32_t data[8] = {0, 0, 0, 0, 1, 1, 1, 1};
 
     if (datasize > 8)
       datasize = 8;
     can_transmitdata(id, datasize, gtime, data);
 #endif
 
-    //upper_leg.spraddle_legs(M_PI/2);
-    //upper_leg.walking(M_PI/2);
+    // upper_leg.spraddle_legs(M_PI/2);
+    // upper_leg.walking(M_PI/2);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -195,8 +188,8 @@ void SystemClock_Config(void)
   RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
 
   /** Initializes the RCC Oscillators according to the specified parameters
-  * in the RCC_OscInitTypeDef structure.
-  */
+   * in the RCC_OscInitTypeDef structure.
+   */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
@@ -209,9 +202,8 @@ void SystemClock_Config(void)
   }
 
   /** Initializes the CPU, AHB and APB buses clocks
-  */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
-                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+   */
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
@@ -221,7 +213,7 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_I2C1|RCC_PERIPHCLK_TIM1;
+  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_I2C1 | RCC_PERIPHCLK_TIM1;
   PeriphClkInit.I2c1ClockSelection = RCC_I2C1CLKSOURCE_SYSCLK;
   PeriphClkInit.Tim1ClockSelection = RCC_TIM1CLK_HCLK;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
@@ -230,6 +222,7 @@ void SystemClock_Config(void)
   }
 }
 /* USER CODE BEGIN 4 */
+
 
 extern "C"
 {
@@ -240,33 +233,33 @@ extern "C"
     uint32_t rdatasize = 8;
     uint32_t timestamp = 0;
     uint32_t matchindex = 0;
-    int8_t rdata[8] = {NULL};
+    uint32_t rdata[8] = {NULL};
 
     // Error_Handler();
     can_receivedata(rid, rtr, rdatasize, timestamp, matchindex, rdata, cfinit);
 
-    //start move---------------------------------------------------------------
-    if(rdata!=NULL){
-      printf("%d",rdata); 
+    // start move---------------------------------------------------------------
+    if (rdata != NULL)
+    {
+      // printf("%d",3);
     }
   }
 }
-void can_transmitdata(uint32_t stdid, uint32_t dlc, uint32_t grobaltime, int8_t data[8])
+void can_transmitdata(uint32_t stdid, uint32_t dlc, uint32_t grobaltime, uint32_t data[8])
 {
   CanTxHeader cantxheader;
   cantxheader.transmit_id_StdId = stdid;
   cantxheader.transmit_datasize_DLC = dlc;
   cantxheader.transmit_grobaltime = grobaltime;
-  for (int i=0;i<8;i++)cantxheader.transmit_data[i]=data[i];
-
-  
+  for (int i = 0; i < 8; i++)
+    cantxheader.transmit_data[i] = data[i];
 
   can_add_txmessage(cantxheader);
   while (can_get_mailboxfreelevel() != 3)
     ;
   // printf("%f", can_get_mailboxfreelevel()); // wait until transmit fiish
 }
-void can_receivedata(uint32_t stdid, uint32_t rtr, uint32_t dlc, uint32_t timestamp, uint32_t matchindex, int8_t data[8], CanFilterInit canfinit)
+void can_receivedata(uint32_t stdid, uint32_t rtr, uint32_t dlc, uint32_t timestamp, uint32_t matchindex, uint32_t data[8], CanFilterInit canfinit)
 {
   CanRxHeader canrxheader;
   canrxheader.receive_id_StdId = stdid;
@@ -274,9 +267,17 @@ void can_receivedata(uint32_t stdid, uint32_t rtr, uint32_t dlc, uint32_t timest
   canrxheader.receive_datasize_DLC = dlc;
   canrxheader.receive_timestamp = timestamp;
   canrxheader.receive_filtermatchindex = matchindex;
-  for(int i=0;i<8;i++)canrxheader.receive_data[i] = data[i];
+  for (int i = 0; i < 8; i++)
+    canrxheader.receive_data[i] = data[i];
 
   can_get_rxmessage(canrxheader, canfinit);
+  /* 
+  printf("%s", "data[7]:");
+  printf("%u\n", canrxheader.receive_data[7]);
+
+  printf("%s", "data[0]:");
+  printf("%u\n", canrxheader.receive_data[0]);
+  */
 }
 static void System_Init()
 {
@@ -296,7 +297,7 @@ static void Can_Init()
   caninit.mcr_fifo_lock = 0;     // enable fifo lockmode
   caninit.mcr_fifo_priority = 0; // Priority is determined by the order of requests (0: identifier of message)
   caninit.btr_debug_silent = 0;
-  caninit.btr_debug_loopback = 1;//1 enable 0 disable
+  caninit.btr_debug_loopback = 1; // 1 enable 0 disable
   caninit.btr_prescalar = 0b100;
   caninit.btr_swj = 1;
   caninit.btr_tseg1 = 0b1011;
@@ -319,31 +320,31 @@ static void Can_Filter_Init()
   can_filter_init(cfinit);
 }
 
-static void MPU9250_GetData(){
+static void MPU9250_GetData()
+{
 
-    uint16_t accel_x, accel_y, accel_z;
-    uint16_t gyro_x, gyro_y, gyro_z;
+  uint16_t accel_x, accel_y, accel_z;
+  uint16_t gyro_x, gyro_y, gyro_z;
 
-    HAL_I2C_Mem_Read(&hi2c1,MPU9250_ADDRESS,0x3b,I2C_MEMADD_SIZE_8BIT,(uint8_t*)accel_x,8,100);
-    accel_x<<0x8;
-    HAL_I2C_Mem_Read(&hi2c1,MPU9250_ADDRESS,0x3c,I2C_MEMADD_SIZE_8BIT,(uint8_t*)accel_x,8,100);
-    HAL_I2C_Mem_Read(&hi2c1,MPU9250_ADDRESS,0x3d,I2C_MEMADD_SIZE_8BIT,(uint8_t*)accel_y,8,100);
-    accel_y<<0x08;
-    HAL_I2C_Mem_Read(&hi2c1,MPU9250_ADDRESS,0x3e,I2C_MEMADD_SIZE_8BIT,(uint8_t*)accel_y,8,100);
-    HAL_I2C_Mem_Read(&hi2c1,MPU9250_ADDRESS,0x3f,I2C_MEMADD_SIZE_8BIT,(uint8_t*)accel_z,8,100);
-    accel_z<<0x08;
-    HAL_I2C_Mem_Read(&hi2c1,MPU9250_ADDRESS,0x40,I2C_MEMADD_SIZE_8BIT,(uint8_t*)accel_z,8,100);
+  HAL_I2C_Mem_Read(&hi2c1, MPU9250_ADDRESS, 0x3b, I2C_MEMADD_SIZE_8BIT, (uint8_t *)accel_x, 8, 100);
+  accel_x << 0x8;
+  HAL_I2C_Mem_Read(&hi2c1, MPU9250_ADDRESS, 0x3c, I2C_MEMADD_SIZE_8BIT, (uint8_t *)accel_x, 8, 100);
+  HAL_I2C_Mem_Read(&hi2c1, MPU9250_ADDRESS, 0x3d, I2C_MEMADD_SIZE_8BIT, (uint8_t *)accel_y, 8, 100);
+  accel_y << 0x08;
+  HAL_I2C_Mem_Read(&hi2c1, MPU9250_ADDRESS, 0x3e, I2C_MEMADD_SIZE_8BIT, (uint8_t *)accel_y, 8, 100);
+  HAL_I2C_Mem_Read(&hi2c1, MPU9250_ADDRESS, 0x3f, I2C_MEMADD_SIZE_8BIT, (uint8_t *)accel_z, 8, 100);
+  accel_z << 0x08;
+  HAL_I2C_Mem_Read(&hi2c1, MPU9250_ADDRESS, 0x40, I2C_MEMADD_SIZE_8BIT, (uint8_t *)accel_z, 8, 100);
 
-
-    HAL_I2C_Mem_Read(&hi2c1,MPU9250_ADDRESS,0x43,I2C_MEMADD_SIZE_8BIT,(uint8_t*)gyro_x,8,100);
-    gyro_x<<0x08;
-    HAL_I2C_Mem_Read(&hi2c1,MPU9250_ADDRESS,0x44,I2C_MEMADD_SIZE_8BIT,(uint8_t*)gyro_x,8,100);
-    HAL_I2C_Mem_Read(&hi2c1,MPU9250_ADDRESS,0x45,I2C_MEMADD_SIZE_8BIT,(uint8_t*)gyro_y,8,100);
-    gyro_y<<0x08;
-    HAL_I2C_Mem_Read(&hi2c1,MPU9250_ADDRESS,0x46,I2C_MEMADD_SIZE_8BIT,(uint8_t*)gyro_y,8,100);
-    HAL_I2C_Mem_Read(&hi2c1,MPU9250_ADDRESS,0x47,I2C_MEMADD_SIZE_8BIT,(uint8_t*)gyro_z,8,100);
-    gyro_z<<0x08;
-    HAL_I2C_Mem_Read(&hi2c1,MPU9250_ADDRESS,0x48,I2C_MEMADD_SIZE_8BIT,(uint8_t*)gyro_z,8,100);
+  HAL_I2C_Mem_Read(&hi2c1, MPU9250_ADDRESS, 0x43, I2C_MEMADD_SIZE_8BIT, (uint8_t *)gyro_x, 8, 100);
+  gyro_x << 0x08;
+  HAL_I2C_Mem_Read(&hi2c1, MPU9250_ADDRESS, 0x44, I2C_MEMADD_SIZE_8BIT, (uint8_t *)gyro_x, 8, 100);
+  HAL_I2C_Mem_Read(&hi2c1, MPU9250_ADDRESS, 0x45, I2C_MEMADD_SIZE_8BIT, (uint8_t *)gyro_y, 8, 100);
+  gyro_y << 0x08;
+  HAL_I2C_Mem_Read(&hi2c1, MPU9250_ADDRESS, 0x46, I2C_MEMADD_SIZE_8BIT, (uint8_t *)gyro_y, 8, 100);
+  HAL_I2C_Mem_Read(&hi2c1, MPU9250_ADDRESS, 0x47, I2C_MEMADD_SIZE_8BIT, (uint8_t *)gyro_z, 8, 100);
+  gyro_z << 0x08;
+  HAL_I2C_Mem_Read(&hi2c1, MPU9250_ADDRESS, 0x48, I2C_MEMADD_SIZE_8BIT, (uint8_t *)gyro_z, 8, 100);
 }
 /* USER CODE END 4 */
 
