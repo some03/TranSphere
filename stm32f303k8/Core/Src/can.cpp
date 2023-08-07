@@ -36,22 +36,7 @@ uint32_t system_init(SYSTEMInit &sysinit)
 uint32_t can_init(CanInit &caninit)
 {
 
-    /* CAN clock enable */
-
-    __HAL_RCC_CAN1_CLK_ENABLE();
-
-    /**CAN GPIO Configuration
-    PA11     ------> CAN_RX
-    PA12     ------> CAN_TX
-    */
-    GPIO_InitTypeDef GPIO_InitStruct = {0};
-    GPIO_InitStruct.Pin = GPIO_PIN_11 | GPIO_PIN_12;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-    GPIO_InitStruct.Alternate = GPIO_AF9_CAN;
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
+    
     CAN->IER |= CAN_IER_FMPIE0;
     NVIC_SetPriority(CAN_RX0_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 0, 0));
     NVIC_EnableIRQ(CAN_RX0_IRQn);

@@ -78,6 +78,24 @@ extern "C"
     return len;
   }
 }
+extern "C"{
+void init(){
+
+    __HAL_RCC_CAN1_CLK_ENABLE();
+
+    /**CAN GPIO Configuration
+    PA11     ------> CAN_RX
+    PA12     ------> CAN_TX
+    */
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+    GPIO_InitStruct.Pin = GPIO_PIN_11 | GPIO_PIN_12;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF9_CAN;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+}
+}
 
 /* USER CODE END 0 */
 
@@ -98,7 +116,7 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-
+/* CAN clock enable */
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -116,6 +134,8 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   // System_Init();
+
+  init();
   Can_Init();
   Can_Filter_Init();
 
@@ -278,6 +298,7 @@ void can_receivedata(uint32_t stdid, uint32_t rtr, uint32_t dlc, uint32_t timest
   printf("%s", "data[0]:");
   printf("%u\n", canrxheader.receive_data[0]);
   */
+  
 }
 static void System_Init()
 {
@@ -293,11 +314,11 @@ static void Can_Init()
   caninit.mcr_time_triger = 0;   // disable time triger mode
   caninit.mcr_bussoff = 0;       // disable auto bussoff
   caninit.mcr_wakeup = 0;        // disable auto wakeup
-  caninit.mcr_retransmit = 0;    // enable retransmit
+  caninit.mcr_retransmit = 0;    // 0 restrict retransmit
   caninit.mcr_fifo_lock = 0;     // enable fifo lockmode
   caninit.mcr_fifo_priority = 0; // Priority is determined by the order of requests (0: identifier of message)
   caninit.btr_debug_silent = 0;
-  caninit.btr_debug_loopback = 1; // 1 enable 0 disable
+  caninit.btr_debug_loopback = 0; // 1 enable 0 disable
   caninit.btr_prescalar = 0b100;
   caninit.btr_swj = 1;
   caninit.btr_tseg1 = 0b1011;
