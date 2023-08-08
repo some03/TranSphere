@@ -145,11 +145,11 @@ int main(void)
 
   // init leg servo {timer,channel}
   servo_num s0[3] = {{&htim1, TIM_CHANNEL_1}, {&htim1, TIM_CHANNEL_2}, {&htim1, TIM_CHANNEL_3}};  // PA8 PA9 PA10
-  servo_num s1[3] = {{&htim2, TIM_CHANNEL_1}, {&htim2, TIM_CHANNEL_2}, {&htim2, TIM_CHANNEL_4}};  // PA0 PA1 PA2
-  servo_num s2[3] = {{&htim3, TIM_CHANNEL_1}, {&htim3, TIM_CHANNEL_2}, {&htim3, TIM_CHANNEL_3}};  // PA3 PA6 PA4
-  servo_num s3[3] = {{&htim3, TIM_CHANNEL_4}, {&htim16, TIM_CHANNEL_1},{&htim17, TIM_CHANNEL_1}}; // PB0 PB1 PB4
+  servo_num s1[3] = {{&htim2, TIM_CHANNEL_1}, {&htim2, TIM_CHANNEL_2}, {&htim2, TIM_CHANNEL_4}};  // PA0 PB3 PA3
+  servo_num s2[3] = {{&htim3, TIM_CHANNEL_1}, {&htim3, TIM_CHANNEL_2}, {&htim3, TIM_CHANNEL_3}};  // PA6 PA4 PB0
+  servo_num s3[3] = {{&htim3, TIM_CHANNEL_4}, {&htim16, TIM_CHANNEL_1},{&htim17, TIM_CHANNEL_1}}; // PB1 PB4 PA7
 
-  servo_num center_s = {&htim15, TIM_CHANNEL_1}; // PA7
+  servo_num center_s = {&htim15, TIM_CHANNEL_1}; // PA1
   tr_legs legs[4] = {s0, s1, s2, s3};
   walk upper_leg(legs, center_s);
   
@@ -183,7 +183,8 @@ int main(void)
       datasize = 8;
     can_transmitdata(id, datasize, gtime, data);
 #endif
-
+    Servo_Start(s0[0],M_PI);
+    //__HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1,5000);
     // upper_leg.spraddle_legs(M_PI/2);
     // upper_leg.walking(M_PI/2);
     /* USER CODE END WHILE */
