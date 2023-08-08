@@ -1,7 +1,6 @@
 #ifndef SERVO_H
 #define SERVO_H
 
-#include"timer.hpp"
 #include"tim.h"
 #include<math.h>
 
@@ -9,7 +8,7 @@
 #define duty_max 0.1
 #define duty_min 0.05
 struct servo_num{
-    TIM_HandleTypeDef &time;
+    TIM_HandleTypeDef *time;
     uint8_t channel;
     /* data */
 };

@@ -128,6 +128,7 @@ int main(void)
   Can_Init();
   Can_Filter_Init();
 
+  // timer count max 10000 pwm 50Hz
   HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_1);
   HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_2);
   HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_3);
@@ -141,7 +142,6 @@ int main(void)
   HAL_TIM_PWM_Start(&htim15,TIM_CHANNEL_1);
   HAL_TIM_PWM_Start(&htim16,TIM_CHANNEL_1);
   HAL_TIM_PWM_Start(&htim17,TIM_CHANNEL_1);
-  // timer count max 10000 pwm 50Hz
 
   // init leg servo {timer,channel}
   servo_num s0[3] = {{&htim1, TIM_CHANNEL_1}, {&htim1, TIM_CHANNEL_2}, {&htim1, TIM_CHANNEL_3}};  // PA8 PA9 PA10
@@ -149,7 +149,7 @@ int main(void)
   servo_num s2[3] = {{&htim3, TIM_CHANNEL_1}, {&htim3, TIM_CHANNEL_2}, {&htim3, TIM_CHANNEL_3}};  // PA3 PA6 PA4
   servo_num s3[3] = {{&htim3, TIM_CHANNEL_4}, {&htim16, TIM_CHANNEL_1},{&htim17, TIM_CHANNEL_1}}; // PB0 PB1 PB4
 
-  servo_num center_s = {17, 1}; // PA7
+  servo_num center_s = {&htim15, TIM_CHANNEL_1}; // PA7
   tr_legs legs[4] = {s0, s1, s2, s3};
   walk upper_leg(legs, center_s);
   
