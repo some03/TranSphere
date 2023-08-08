@@ -21,6 +21,7 @@
 #include "usart.h"
 #include "gpio.h"
 #include "i2c.h"
+#include "tim.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "can.hpp"
@@ -35,7 +36,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define TRANSMITTER
+//#define TRANSMITTER
 // #define RECEIVER
 #define MPU9250_ADDRESS 0
 /* USER CODE END PD */
@@ -78,24 +79,6 @@ extern "C"
     return len;
   }
 }
-extern "C"{
-void init(){
-
-    __HAL_RCC_CAN1_CLK_ENABLE();
-
-    /**CAN GPIO Configuration
-    PA11     ------> CAN_RX
-    PA12     ------> CAN_TX
-    */
-    GPIO_InitTypeDef GPIO_InitStruct = {0};
-    GPIO_InitStruct.Pin = GPIO_PIN_11 | GPIO_PIN_12;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-    GPIO_InitStruct.Alternate = GPIO_AF9_CAN;
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-}
-}
 
 /* USER CODE END 0 */
 
@@ -127,36 +110,49 @@ int main(void)
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
+
   MX_GPIO_Init();
+  MX_TIM16_Init();
+  MX_TIM17_Init();
+  MX_I2C1_Init();
   MX_USART2_UART_Init();
-  // MX_I2C1_Init();
+  MX_TIM1_Init();
+  MX_TIM2_Init();
+  MX_TIM3_Init();
+  MX_TIM15_Init();
 
   /* USER CODE BEGIN 2 */
 
   // System_Init();
 
-  init();
   Can_Init();
   Can_Filter_Init();
 
+  HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_1);
+  HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_2);
+  HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_3);
+  HAL_TIM_PWM_Start(&htim2,TIM_CHANNEL_1);
+  HAL_TIM_PWM_Start(&htim2,TIM_CHANNEL_2);
+  HAL_TIM_PWM_Start(&htim2,TIM_CHANNEL_4);
+  HAL_TIM_PWM_Start(&htim3,TIM_CHANNEL_1);
+  HAL_TIM_PWM_Start(&htim3,TIM_CHANNEL_2);
+  HAL_TIM_PWM_Start(&htim3,TIM_CHANNEL_3);
+  HAL_TIM_PWM_Start(&htim3,TIM_CHANNEL_4);
+  HAL_TIM_PWM_Start(&htim15,TIM_CHANNEL_1);
+  HAL_TIM_PWM_Start(&htim16,TIM_CHANNEL_1);
+  HAL_TIM_PWM_Start(&htim17,TIM_CHANNEL_1);
   // timer count max 10000 pwm 50Hz
-  /*
-  Timer1_PWM_Init(10000, 64);
-  Timer2_PWM_Init(10000, 64);
-  Timer3_PWM_Init(10000, 64);
-  Timer16_PWM_Init(10000, 64);
-  Timer17_PWM_Init(10000, 64);
 
   // init leg servo {timer,channel}
-  servo_num s0[3] = {{1, 1}, {1, 2}, {1, 3}};  // PA8 PA9 PA10
-  servo_num s1[3] = {{2, 1}, {2, 2}, {2, 3}};  // PA0 PA1 PA2
-  servo_num s2[3] = {{2, 4}, {3, 1}, {3, 2}};  // PA3 PA6 PA4
-  servo_num s3[3] = {{3, 3}, {3, 4}, {16, 1}}; // PB0 PB1 PB4
+  servo_num s0[3] = {{&htim1, TIM_CHANNEL_1}, {&htim1, TIM_CHANNEL_2}, {&htim1, TIM_CHANNEL_3}};  // PA8 PA9 PA10
+  servo_num s1[3] = {{&htim2, TIM_CHANNEL_1}, {&htim2, TIM_CHANNEL_2}, {&htim2, TIM_CHANNEL_4}};  // PA0 PA1 PA2
+  servo_num s2[3] = {{&htim3, TIM_CHANNEL_1}, {&htim3, TIM_CHANNEL_2}, {&htim3, TIM_CHANNEL_3}};  // PA3 PA6 PA4
+  servo_num s3[3] = {{&htim3, TIM_CHANNEL_4}, {&htim16, TIM_CHANNEL_1},{&htim17, TIM_CHANNEL_1}}; // PB0 PB1 PB4
 
   servo_num center_s = {17, 1}; // PA7
   tr_legs legs[4] = {s0, s1, s2, s3};
   walk upper_leg(legs, center_s);
-  */
+  
 
   // wake up mpu 9250---------------
   /*
@@ -291,13 +287,13 @@ void can_receivedata(uint32_t stdid, uint32_t rtr, uint32_t dlc, uint32_t timest
     canrxheader.receive_data[i] = data[i];
 
   can_get_rxmessage(canrxheader, canfinit);
-  /* 
+   
   printf("%s", "data[7]:");
   printf("%u\n", canrxheader.receive_data[7]);
 
   printf("%s", "data[0]:");
   printf("%u\n", canrxheader.receive_data[0]);
-  */
+  
   
 }
 static void System_Init()
