@@ -183,7 +183,8 @@ int main(void)
       datasize = 8;
     can_transmitdata(id, datasize, gtime, data);
 #endif
-    Servo_Start(s0[0],2/M_PI);
+    Servo_Start(s0[0],0);
+
     //__HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1,5000);
     // upper_leg.spraddle_legs(M_PI/2);
     // upper_leg.walking(M_PI/2);
