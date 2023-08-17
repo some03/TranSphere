@@ -5,7 +5,7 @@
 void Servo_Start(servo_num s,float rad){
 
     float p=((((rad/M_PI)*(t_max-t_min))+t_min)/t_pwm)*psc;
-    printf("%f\n",p);
+    //printf("%f\n",p);
     
     if(p>(psc*(t_max/t_pwm)))p=(psc*(t_max/t_pwm));
     if(p<(psc*(t_min/t_pwm)))p=(psc*(t_min/t_pwm));

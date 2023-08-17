@@ -32,7 +32,12 @@
 
 /* USER CODE END 1 */
 
-/** Pinout Configuration
+/** Configure pins as
+        * Analog
+        * Input
+        * Output
+        * EVENT_OUT
+        * EXTI
 */
 void MX_GPIO_Init(void)
 {

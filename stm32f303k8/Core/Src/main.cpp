@@ -39,6 +39,7 @@
 //#define TRANSMITTER
 // #define RECEIVER
 #define MPU9250_ADDRESS 0
+#define MPU9250
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -125,8 +126,8 @@ int main(void)
 
   // System_Init();
 
-  Can_Init();
-  Can_Filter_Init();
+  //Can_Init();
+  //Can_Filter_Init();
 
   // timer count max 10000 pwm 50Hz
   HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_1);
@@ -139,7 +140,7 @@ int main(void)
   HAL_TIM_PWM_Start(&htim3,TIM_CHANNEL_2);
   HAL_TIM_PWM_Start(&htim3,TIM_CHANNEL_3);
   HAL_TIM_PWM_Start(&htim3,TIM_CHANNEL_4);
-  HAL_TIM_PWM_Start(&htim15,TIM_CHANNEL_1);
+  HAL_TIMEx_PWMN_Start(&htim15,TIM_CHANNEL_1);
   HAL_TIM_PWM_Start(&htim16,TIM_CHANNEL_1);
   HAL_TIM_PWM_Start(&htim17,TIM_CHANNEL_1);
 
@@ -155,7 +156,7 @@ int main(void)
   
 
   // wake up mpu 9250---------------
-  /*
+  
   uint8_t wu[1]={0};
   HAL_I2C_Mem_Write(&hi2c1,MPU9250_ADDRESS,0x6b,I2C_MEMADD_SIZE_8BIT,wu,0x01,100);
 
@@ -183,7 +184,7 @@ int main(void)
       datasize = 8;
     can_transmitdata(id, datasize, gtime, data);
 #endif
-    Servo_Start(s0[0],0);
+    Servo_Start(center_s,0);
 
     //__HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1,5000);
     // upper_leg.spraddle_legs(M_PI/2);
@@ -289,13 +290,13 @@ void can_receivedata(uint32_t stdid, uint32_t rtr, uint32_t dlc, uint32_t timest
     canrxheader.receive_data[i] = data[i];
 
   can_get_rxmessage(canrxheader, canfinit);
-   
+ /*  
   printf("%s", "data[7]:");
   printf("%u\n", canrxheader.receive_data[7]);
 
   printf("%s", "data[0]:");
   printf("%u\n", canrxheader.receive_data[0]);
-  
+ */ 
   
 }
 static void System_Init()
