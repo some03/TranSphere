@@ -36,9 +36,9 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-//#define TRANSMITTER
-// #define RECEIVER
-#define MPU9250_ADDRESS 0
+// #define TRANSMITTER
+//  #define RECEIVER
+#define MPU9250_ADDRESS 0b1101000<<1
 #define MPU9250
 /* USER CODE END PD */
 
@@ -100,7 +100,7 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-/* CAN clock enable */
+  /* CAN clock enable */
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -126,54 +126,62 @@ int main(void)
 
   // System_Init();
 
-  //Can_Init();
-  //Can_Filter_Init();
+  // Can_Init();
+  // Can_Filter_Init();
 
   // timer count max 10000 pwm 50Hz
-  HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_1);
-  HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_2);
-  HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_3);
-  HAL_TIM_PWM_Start(&htim2,TIM_CHANNEL_1);
-  HAL_TIM_PWM_Start(&htim2,TIM_CHANNEL_2);
-  HAL_TIM_PWM_Start(&htim2,TIM_CHANNEL_4);
-  HAL_TIM_PWM_Start(&htim3,TIM_CHANNEL_1);
-  HAL_TIM_PWM_Start(&htim3,TIM_CHANNEL_2);
-  HAL_TIM_PWM_Start(&htim3,TIM_CHANNEL_3);
-  HAL_TIM_PWM_Start(&htim3,TIM_CHANNEL_4);
-  HAL_TIMEx_PWMN_Start(&htim15,TIM_CHANNEL_1);
-  HAL_TIM_PWM_Start(&htim16,TIM_CHANNEL_1);
-  HAL_TIM_PWM_Start(&htim17,TIM_CHANNEL_1);
+ //PA6 PA5 can't use pwm
+  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
+  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
+  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3);
+  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
+  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
+  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_4);
+  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
+  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
+  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
+  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_4);
+  HAL_TIMEx_PWMN_Start(&htim15, TIM_CHANNEL_1);
+  //HAL_TIM_PWM_Start(&htim16, TIM_CHANNEL_1);
+  HAL_TIM_PWM_Start(&htim17, TIM_CHANNEL_1);
 
   // init leg servo {timer,channel}
-  servo_num s0[3] = {{&htim1, TIM_CHANNEL_1}, {&htim1, TIM_CHANNEL_2}, {&htim1, TIM_CHANNEL_3}};  // PA8 PA9 PA10
-  servo_num s1[3] = {{&htim2, TIM_CHANNEL_1}, {&htim2, TIM_CHANNEL_2}, {&htim2, TIM_CHANNEL_4}};  // PA0 PB3 PA3
-  servo_num s2[3] = {{&htim3, TIM_CHANNEL_1}, {&htim3, TIM_CHANNEL_2}, {&htim3, TIM_CHANNEL_3}};  // PA6 PA4 PB0
-  servo_num s3[3] = {{&htim3, TIM_CHANNEL_4}, {&htim16, TIM_CHANNEL_1},{&htim17, TIM_CHANNEL_1}}; // PB1 PB4 PA7
+  servo_num s0[3] = {{&htim1, TIM_CHANNEL_1}, {&htim1, TIM_CHANNEL_2}, {&htim1, TIM_CHANNEL_3}};   // PA8 PA9 PA10
+  servo_num s1[3] = {{&htim2, TIM_CHANNEL_1}, {&htim2, TIM_CHANNEL_2}, {&htim2, TIM_CHANNEL_4}};   // PA0 PB3 PA3
+  servo_num s2[3] = {{&htim3, TIM_CHANNEL_1}, {&htim3, TIM_CHANNEL_2}, {&htim3, TIM_CHANNEL_3}};   // PA6 PA4 PB0
+  servo_num s3[3] = {{&htim3, TIM_CHANNEL_4}, {&htim16, TIM_CHANNEL_1}, {&htim17, TIM_CHANNEL_1}}; // PB1 PB4 PA7
 
   servo_num center_s = {&htim15, TIM_CHANNEL_1}; // PA1
   tr_legs legs[4] = {s0, s1, s2, s3};
   walk upper_leg(legs, center_s);
-  
 
   // wake up mpu 9250---------------
-  
-  uint8_t wu[1]={0};
-  HAL_I2C_Mem_Write(&hi2c1,MPU9250_ADDRESS,0x6b,I2C_MEMADD_SIZE_8BIT,wu,0x01,100);
 
-  //set accelsensor  range----------
-  uint8_t st[1]={0x18};
-  HAL_I2C_Mem_Write(&hi2c1,MPU9250_ADDRESS,0x1c,I2C_MEMADD_SIZE_8BIT,st,0x01,100);
+  uint8_t wu[1] = {0x00};
+  int b = HAL_I2C_Mem_Write(&hi2c1, MPU9250_ADDRESS, 0x6b, I2C_MEMADD_SIZE_8BIT, wu, 0x01, 100);
+  printf("%d\n", b);
+  // set accelsensor  range----------
+  uint8_t st[1] = {0x18};
+  HAL_I2C_Mem_Write(&hi2c1, MPU9250_ADDRESS, 0x1c, I2C_MEMADD_SIZE_8BIT, st, 0x01, 100);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  //I2C1->CR1|=0b1<<1;
+  //I2C1->CR1|=0b1<<7;
   while (1)
   {
 #ifdef MPU9250
+    /* 
+     uint8_t who_i_im[1]={0x00};
+     int a=HAL_I2C_Mem_Read(&hi2c1, MPU9250_ADDRESS, 0x75, I2C_MEMADD_SIZE_8BIT, who_i_im, 0x01, 100);
+     printf("%s","a");
+     printf("%d\n",who_i_im[0]);
+    */ 
     MPU9250_GetData();
 #endif
 
-//printf("%d\n", 1);
+// printf("%d\n", 1);
 #ifdef TRANSMITTER
     uint32_t id = 3;
     uint32_t datasize = 8;
@@ -184,11 +192,10 @@ int main(void)
       datasize = 8;
     can_transmitdata(id, datasize, gtime, data);
 #endif
-    Servo_Start(center_s,0);
-
+    // Servo_Start(center_s,0);
     //__HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1,5000);
-    // upper_leg.spraddle_legs(M_PI/2);
-    // upper_leg.walking(M_PI/2);
+    //  upper_leg.spraddle_legs(M_PI/2);
+    //  upper_leg.walking(M_PI/2);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -233,7 +240,7 @@ void SystemClock_Config(void)
     Error_Handler();
   }
   PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_I2C1 | RCC_PERIPHCLK_TIM1;
-  PeriphClkInit.I2c1ClockSelection = RCC_I2C1CLKSOURCE_SYSCLK;
+  PeriphClkInit.I2c1ClockSelection = RCC_I2C1CLKSOURCE_HSI;
   PeriphClkInit.Tim1ClockSelection = RCC_TIM1CLK_HCLK;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
   {
@@ -241,7 +248,6 @@ void SystemClock_Config(void)
   }
 }
 /* USER CODE BEGIN 4 */
-
 
 extern "C"
 {
@@ -290,14 +296,13 @@ void can_receivedata(uint32_t stdid, uint32_t rtr, uint32_t dlc, uint32_t timest
     canrxheader.receive_data[i] = data[i];
 
   can_get_rxmessage(canrxheader, canfinit);
- /*  
-  printf("%s", "data[7]:");
-  printf("%u\n", canrxheader.receive_data[7]);
+  /*
+   printf("%s", "data[7]:");
+   printf("%u\n", canrxheader.receive_data[7]);
 
-  printf("%s", "data[0]:");
-  printf("%u\n", canrxheader.receive_data[0]);
- */ 
-  
+   printf("%s", "data[0]:");
+   printf("%u\n", canrxheader.receive_data[0]);
+  */
 }
 static void System_Init()
 {
@@ -343,28 +348,36 @@ static void Can_Filter_Init()
 static void MPU9250_GetData()
 {
 
-  uint16_t accel_x, accel_y, accel_z;
-  uint16_t gyro_x, gyro_y, gyro_z;
+  uint8_t accelx_h[1]={0}, accelx_l[1]={0},accely_h[1]={0},accely_l[1]={0}, accelz_h[1]={0},accelz_l[1]={0};
+  uint8_t gyrox_h[1]={0}, gyrox_l[1]={0},gyroy_h[1]={0},gyroy_l[1]={0} ,gyroz_h[1]={0},gyroz_l[1]={0};
 
-  HAL_I2C_Mem_Read(&hi2c1, MPU9250_ADDRESS, 0x3b, I2C_MEMADD_SIZE_8BIT, (uint8_t *)accel_x, 8, 100);
-  accel_x << 0x8;
-  HAL_I2C_Mem_Read(&hi2c1, MPU9250_ADDRESS, 0x3c, I2C_MEMADD_SIZE_8BIT, (uint8_t *)accel_x, 8, 100);
-  HAL_I2C_Mem_Read(&hi2c1, MPU9250_ADDRESS, 0x3d, I2C_MEMADD_SIZE_8BIT, (uint8_t *)accel_y, 8, 100);
-  accel_y << 0x08;
-  HAL_I2C_Mem_Read(&hi2c1, MPU9250_ADDRESS, 0x3e, I2C_MEMADD_SIZE_8BIT, (uint8_t *)accel_y, 8, 100);
-  HAL_I2C_Mem_Read(&hi2c1, MPU9250_ADDRESS, 0x3f, I2C_MEMADD_SIZE_8BIT, (uint8_t *)accel_z, 8, 100);
-  accel_z << 0x08;
-  HAL_I2C_Mem_Read(&hi2c1, MPU9250_ADDRESS, 0x40, I2C_MEMADD_SIZE_8BIT, (uint8_t *)accel_z, 8, 100);
+  HAL_I2C_Mem_Read(&hi2c1, MPU9250_ADDRESS, 0x3b, I2C_MEMADD_SIZE_8BIT, accelx_h, 1, 100);
+  HAL_I2C_Mem_Read(&hi2c1, MPU9250_ADDRESS, 0x3c, I2C_MEMADD_SIZE_8BIT, accelx_l, 1, 100);
+  HAL_I2C_Mem_Read(&hi2c1, MPU9250_ADDRESS, 0x3d, I2C_MEMADD_SIZE_8BIT, accely_h, 1, 100);
+  HAL_I2C_Mem_Read(&hi2c1, MPU9250_ADDRESS, 0x3e, I2C_MEMADD_SIZE_8BIT, accely_l, 1, 100);
+  HAL_I2C_Mem_Read(&hi2c1, MPU9250_ADDRESS, 0x3f, I2C_MEMADD_SIZE_8BIT, accelz_h, 1, 100);
+  HAL_I2C_Mem_Read(&hi2c1, MPU9250_ADDRESS, 0x40, I2C_MEMADD_SIZE_8BIT, accelz_l, 1, 100);
 
-  HAL_I2C_Mem_Read(&hi2c1, MPU9250_ADDRESS, 0x43, I2C_MEMADD_SIZE_8BIT, (uint8_t *)gyro_x, 8, 100);
-  gyro_x << 0x08;
-  HAL_I2C_Mem_Read(&hi2c1, MPU9250_ADDRESS, 0x44, I2C_MEMADD_SIZE_8BIT, (uint8_t *)gyro_x, 8, 100);
-  HAL_I2C_Mem_Read(&hi2c1, MPU9250_ADDRESS, 0x45, I2C_MEMADD_SIZE_8BIT, (uint8_t *)gyro_y, 8, 100);
-  gyro_y << 0x08;
-  HAL_I2C_Mem_Read(&hi2c1, MPU9250_ADDRESS, 0x46, I2C_MEMADD_SIZE_8BIT, (uint8_t *)gyro_y, 8, 100);
-  HAL_I2C_Mem_Read(&hi2c1, MPU9250_ADDRESS, 0x47, I2C_MEMADD_SIZE_8BIT, (uint8_t *)gyro_z, 8, 100);
-  gyro_z << 0x08;
-  HAL_I2C_Mem_Read(&hi2c1, MPU9250_ADDRESS, 0x48, I2C_MEMADD_SIZE_8BIT, (uint8_t *)gyro_z, 8, 100);
+  HAL_I2C_Mem_Read(&hi2c1, MPU9250_ADDRESS, 0x43, I2C_MEMADD_SIZE_8BIT, gyrox_h, 1, 100);
+  HAL_I2C_Mem_Read(&hi2c1, MPU9250_ADDRESS, 0x44, I2C_MEMADD_SIZE_8BIT, gyrox_l, 1, 100);
+  HAL_I2C_Mem_Read(&hi2c1, MPU9250_ADDRESS, 0x45, I2C_MEMADD_SIZE_8BIT, gyroy_h, 1, 100);
+  HAL_I2C_Mem_Read(&hi2c1, MPU9250_ADDRESS, 0x46, I2C_MEMADD_SIZE_8BIT, gyroy_l, 1, 100);
+  HAL_I2C_Mem_Read(&hi2c1, MPU9250_ADDRESS, 0x47, I2C_MEMADD_SIZE_8BIT, gyroz_h, 1, 100);
+  HAL_I2C_Mem_Read(&hi2c1, MPU9250_ADDRESS, 0x48, I2C_MEMADD_SIZE_8BIT, gyroz_l, 1, 100);
+
+  int16_t accelx=(accelx_h[0]<<8)|accelx_l[0];
+  int16_t accely=(accely_h[0]<<8)|accely_l[0];
+  int16_t accelz=(accelz_h[0]<<8)|accelz_l[0];
+  
+  int16_t gyrox=(gyrox_h[0]<<8)|gyrox_l[0];
+  int16_t gyroy=(gyroy_h[0]<<8)|gyroy_l[0];
+  int16_t gyroz=(gyroz_h[0]<<8)|gyroz_l[0];
+
+  //int16_t a[6]={accelx,accely,accelz,gyrox,gyroy,gyroz};
+  //return a;
+
+   printf("%s","x:");
+   printf("%d\n",gyroz_h[0]);
 }
 /* USER CODE END 4 */
 

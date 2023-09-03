@@ -1,0 +1,3 @@
+2023-09-02 15:57:41,119 [INFO] I2cTimingTraitement:330 - 0x2000090E
+2023-09-02 15:57:51,518 [INFO] I2cTimingTraitement:330 - 0x2000090E
+2023-09-02 15:57:51,578 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
